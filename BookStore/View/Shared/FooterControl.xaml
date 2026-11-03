@@ -1,0 +1,34 @@
+﻿<UserControl x:Class="BookStore.View.Shared.FooterControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Border Background="#161d26" Padding="40,30">
+        <StackPanel>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Cột hỗ trợ -->
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="HỖ TRỢ" Foreground="White" FontWeight="Bold" FontSize="12" Margin="0,0,0,10"/>
+                    <TextBlock Text="Chính sách đổi trả" Foreground="#b0bec5" FontSize="12" Margin="0,0,0,5" Cursor="Hand"/>
+                    <TextBlock Text="Vận chuyển" Foreground="#b0bec5" FontSize="12" Margin="0,0,0,5" Cursor="Hand"/>
+                    <TextBlock Text="Câu hỏi thường gặp" Foreground="#b0bec5" FontSize="12" Cursor="Hand"/>
+                </StackPanel>
+
+                <!-- Cột liên hệ -->
+                <StackPanel Grid.Column="1">
+                    <TextBlock Text="LIÊN HỆ" Foreground="White" FontWeight="Bold" FontSize="12" Margin="0,0,0,10"/>
+                    <TextBlock Text="📍 Hà Nội, Việt Nam" Foreground="#b0bec5" FontSize="12" Margin="0,0,0,5"/>
+                    <TextBlock Text="✉️ hotro@bookymart.vn" Foreground="#b0bec5" FontSize="12" Margin="0,0,0,5"/>
+                    <TextBlock Text="📞 1900 1234" Foreground="#b0bec5" FontSize="12"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- Bản quyền -->
+            <Separator Background="#34495e" Margin="0,20,0,15"/>
+            <TextBlock Text="© 2026 Booky Mart - Hệ thống phân phối sách &amp; văn phòng phẩm" Foreground="#7f8c8d" FontSize="11" HorizontalAlignment="Center"/>
+        </StackPanel>
+    </Border>
+</UserControl>

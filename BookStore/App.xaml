@@ -1,9 +1,6 @@
 ﻿<Application x:Class="BookStore.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:BookStore"
-             StartupUri="MainWindow.xaml">
-    <Application.Resources>
-         
-    </Application.Resources>
+             StartupUri="View/Customer/HomeWindow.xaml">
+    <!-- Hoặc trỏ trực tiếp về HomeWindow nếu muốn khách vào xem trước -->
 </Application>

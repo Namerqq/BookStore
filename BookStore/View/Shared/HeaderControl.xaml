@@ -1,0 +1,42 @@
+﻿<UserControl x:Class="BookStore.View.Shared.HeaderControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Border Background="White" BorderBrush="#e0e0e0" BorderThickness="0,0,0,1" Padding="30,12">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Logo -->
+            <TextBlock Grid.Column="0" Text="Booky.Mart" FontSize="22" FontWeight="Bold" Foreground="#1e2632" VerticalAlignment="Center" Margin="0,0,30,0"/>
+
+            <!-- Menu điều hướng -->
+            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                <Button Content="Sách" Background="Transparent" Foreground="#333" FontWeight="SemiBold" BorderThickness="0" Margin="0,0,20,0" Cursor="Hand"/>
+                <Button Content="Văn phòng phẩm" Background="Transparent" Foreground="#333" FontWeight="SemiBold" BorderThickness="0" Margin="0,0,20,0" Cursor="Hand"/>
+                <Button Content="Khuyến mãi" Background="Transparent" Foreground="#333" FontWeight="SemiBold" BorderThickness="0" Cursor="Hand"/>
+            </StackPanel>
+
+            <!-- Ô tìm kiếm -->
+            <Border Grid.Column="2" Background="#f5f5f5" CornerRadius="20" Height="36" Width="280" HorizontalAlignment="Center" Padding="12,0">
+                <Grid>
+                    <TextBlock Text="🔍 Tìm sách, bút, sổ tay..." Foreground="#999" VerticalAlignment="Center" FontSize="12"/>
+                    <TextBox Background="Transparent" BorderThickness="0" VerticalAlignment="Center" FontSize="12"/>
+                </Grid>
+            </Border>
+
+            <!-- Nút Đăng nhập & Giỏ hàng -->
+            <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center">
+                <Border Background="#f5f5f5" CornerRadius="18" Padding="12,6" Margin="0,0,10,0" Cursor="Hand">
+                    <Button x:Name="BtnAuth" Content="👤 Login" Click="BtnAuth_Click" Background="Transparent" Foreground="#333" FontWeight="SemiBold" BorderThickness="0" Cursor="Hand"/>
+                </Border>
+                <Border Background="#f5f5f5" CornerRadius="18" Width="36" Height="36" Cursor="Hand">
+                    <TextBlock Text="🛒" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="14"/>
+                </Border>
+            </StackPanel>
+        </Grid>
+    </Border>
+</UserControl>
