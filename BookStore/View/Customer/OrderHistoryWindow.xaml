@@ -1,0 +1,58 @@
+﻿<Window x:Class="BookStore.View.Customer.OrderHistoryWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Đơn hàng của tôi — Booky Mart" Height="620" Width="1000" WindowStartupLocation="CenterOwner" Language="vi-VN" Loaded="Window_Loaded">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/BookStore;component/View/Shared/OrderFlowStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid Background="#F4F4F5">
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid Margin="0,0,0,14">
+                <TextBlock Text="Đơn hàng của tôi" Style="{StaticResource PageTitle}"/>
+                <ComboBox x:Name="cboStatus" Width="190" HorizontalAlignment="Right" Padding="8,6" SelectionChanged="CboStatus_SelectionChanged">
+                    <ComboBoxItem Content="Tất cả trạng thái" Tag="" IsSelected="True"/>
+                    <ComboBoxItem Content="Chờ thanh toán" Tag="PENDING_PAYMENT"/>
+                    <ComboBoxItem Content="Chờ xác nhận" Tag="PENDING"/>
+                    <ComboBoxItem Content="Đang xử lý" Tag="PROCESSING"/>
+                    <ComboBoxItem Content="Đang giao" Tag="SHIPPED"/>
+                    <ComboBoxItem Content="Đã giao" Tag="DELIVERED"/>
+                    <ComboBoxItem Content="Tạm giữ" Tag="ON_HOLD"/>
+                    <ComboBoxItem Content="Đã hủy" Tag="CANCELLED"/>
+                </ComboBox>
+            </Grid>
+
+            <Grid Grid.Row="1">
+                <DataGrid x:Name="dgOrders" Style="{StaticResource DataTable}" MouseDoubleClick="DgOrders_MouseDoubleClick">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Mã đơn" Binding="{Binding OrderCode}" Width="180"/>
+                        <DataGridTextColumn Header="Ngày đặt" Binding="{Binding CreatedAt, StringFormat={}{0:dd/MM/yyyy HH:mm}}" Width="130"/>
+                        <DataGridTextColumn Header="Trạng thái" Binding="{Binding StatusText}" Width="120"/>
+                        <DataGridTextColumn Header="Thanh toán" Binding="{Binding PaymentStatusText}" Width="130"/>
+                        <DataGridTextColumn Header="Hoàn hàng" Binding="{Binding ReturnStatusText}" Width="130"/>
+                        <DataGridTextColumn Header="Tổng tiền" Binding="{Binding Total, StringFormat={}{0:N0}đ}" Width="*" FontWeight="SemiBold"/>
+                        <DataGridTemplateColumn Header="" Width="80">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Content="Xem" Style="{StaticResource SmallBtn}" VerticalAlignment="Center" Click="BtnView_Click"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+                <TextBlock x:Name="txtEmpty" Text="Không có đơn hàng nào." Style="{StaticResource MutedText}" FontSize="14"
+                           HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed"/>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

@@ -25,6 +25,35 @@ namespace BookStore.View.Shared
             {
                 BtnAuth.Content = "👤 Login";
             }
+
+            // Tài khoản nội bộ không mua hàng; khách vãng lai bấm giỏ hàng sẽ được chuyển sang đăng nhập.
+            bool isCustomer = SessionGuard.IsCustomer;
+            BtnOrders.Visibility = isCustomer ? Visibility.Visible : Visibility.Collapsed;
+            BtnAddresses.Visibility = isCustomer ? Visibility.Visible : Visibility.Collapsed;
+            CartBox.Visibility = isCustomer || !SessionGuard.IsLoggedIn ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private void BtnCart_Click(object sender, RoutedEventArgs e)
+        {
+            if (!SessionGuard.IsLoggedIn)
+            {
+                LoginWindow loginWindow = new LoginWindow();
+                loginWindow.Show();
+                Window.GetWindow(this)?.Close();
+                return;
+            }
+
+            new CartWindow { Owner = Window.GetWindow(this) }.ShowDialog();
+        }
+
+        private void BtnOrders_Click(object sender, RoutedEventArgs e)
+        {
+            new OrderHistoryWindow { Owner = Window.GetWindow(this) }.ShowDialog();
+        }
+
+        private void BtnAddresses_Click(object sender, RoutedEventArgs e)
+        {
+            new AddressBookWindow { Owner = Window.GetWindow(this) }.ShowDialog();
         }
 
         private void BtnAuth_Click(object sender, RoutedEventArgs e)

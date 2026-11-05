@@ -65,7 +65,7 @@
                                         <StackPanel Grid.Column="1" Margin="8,0,0,0" VerticalAlignment="Center">
                                             <TextBlock Text="{Binding Code}" FontWeight="Bold" FontSize="11"/>
                                             <TextBlock Text="{Binding MinOrderValue, StringFormat=Đơn từ {0:N0}đ}" FontSize="10" Foreground="#666"/>
-                                            <Button Content="Lưu mã" FontSize="10" Padding="5,2" Margin="0,5,0,0" HorizontalAlignment="Left" Background="#F4EAE6" Foreground="#C2542D" BorderThickness="0" Cursor="Hand"/>
+                                            <Button Content="Lưu mã" Click="BtnSaveVoucher_Click" FontSize="10" Padding="5,2" Margin="0,5,0,0" HorizontalAlignment="Left" Background="#F4EAE6" Foreground="#C2542D" BorderThickness="0" Cursor="Hand"/>
                                         </StackPanel>
                                     </Grid>
                                 </Border>
@@ -149,7 +149,7 @@
                                         <Grid Grid.Row="2" VerticalAlignment="Bottom">
                                             <TextBlock Text="{Binding Price, StringFormat={}{0:N0}đ}" FontWeight="Bold" FontSize="13" Foreground="#1e2632" VerticalAlignment="Center"/>
                                             <Border CornerRadius="14" Background="#1e2632" Width="28" Height="28" HorizontalAlignment="Right">
-                                                <Button Content="+" Background="Transparent" Foreground="White" FontWeight="Bold" BorderThickness="0" Width="28" Height="28" Cursor="Hand"/>
+                                                <Button Content="+" Click="BtnAddToCart_Click" Background="Transparent" Foreground="White" FontWeight="Bold" BorderThickness="0" Width="28" Height="28" Cursor="Hand"/>
                                             </Border>
                                         </Grid>
                                     </Grid>
