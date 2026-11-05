@@ -1,0 +1,58 @@
+﻿<Window x:Class="BookStore.View.Admin.AdminLayoutWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:shared="clr-namespace:BookStore.View.Shared"
+        Title="Admin Dashboard — Booky Mart" Height="720" Width="1200" WindowStartupLocation="CenterScreen">
+
+    <Window.Resources>
+        <!-- Style Card trắng bo góc, có bóng đổ mềm mịn giống thiết kế mẫu -->
+        <Style x:Key="ContentCard" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect Color="#64748B" Direction="270" ShadowDepth="4" BlurRadius="16" Opacity="0.08"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid Background="#F1F5F9">
+        <Grid.ColumnDefinitions>
+            <!-- Cố định Sidebar bên trái đúng chuẩn kích thước -->
+            <ColumnDefinition Width="240"/>
+            <!-- Vùng nội dung bên phải -->
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- SIDEBAR BÊN TRÁI -->
+        <Border Grid.Column="0" Background="#111827">
+            <shared:SidebarControl/>
+        </Border>
+
+        <!-- VÙNG NỘI DUNG CHÍNH BÊN PHẢI -->
+        <Grid Grid.Column="1" Margin="32">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Tiêu đề trang -->
+            <StackPanel Grid.Row="0" Margin="0,0,0,24">
+                <TextBlock Text="Bảng Điều Khiển Quản Trị" FontSize="24" FontWeight="Bold" Foreground="#0F172A"/>
+                <TextBlock Text="Quản lý hệ thống, sản phẩm, tài khoản và các chương trình khuyến mãi của cửa hàng." FontSize="13" Foreground="#64748B" Margin="0,4,0,0"/>
+            </StackPanel>
+
+            <!-- Khung Card chứa bảng dữ liệu (Giống hệt Ảnh 2) -->
+            <Border Grid.Row="1" Style="{StaticResource ContentCard}" Padding="32">
+                <Grid>
+                    <TextBlock Text="[ Vùng chứa bảng dữ liệu hoặc form nhập liệu chi tiết ]" 
+                               VerticalAlignment="Center" HorizontalAlignment="Center" 
+                               Foreground="#94A3B8" FontSize="14" FontWeight="Medium"/>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>
