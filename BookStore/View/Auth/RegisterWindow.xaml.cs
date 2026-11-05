@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Input;
-using BookStore.Controllers; // Nhớ thêm using này
+using BookStore.Controllers;
 
 namespace BookStore.View.Auth
 {
@@ -11,15 +11,17 @@ namespace BookStore.View.Auth
         public RegisterWindow()
         {
             InitializeComponent();
-            _controller = new AccountController(); // Khởi tạo controller
+            _controller = new AccountController();
         }
 
         private void BtnRegister_Click(object sender, RoutedEventArgs e)
         {
             string fullName = txtFullName.Text.Trim();
             string email = txtEmail.Text.Trim();
-            string pass = txtPassword.Password;
-            string confirmPass = txtConfirmPassword.Password;
+
+            // Lấy mật khẩu dựa trên trạng thái (đang ẩn hay đang hiện)
+            string pass = txtPassword.Visibility == Visibility.Visible ? txtPassword.Password : txtPasswordVisible.Text;
+            string confirmPass = txtConfirmPassword.Visibility == Visibility.Visible ? txtConfirmPassword.Password : txtConfirmPasswordVisible.Text;
 
             if (string.IsNullOrEmpty(fullName) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(pass))
             {
@@ -39,7 +41,6 @@ namespace BookStore.View.Auth
                 return;
             }
 
-            // Gọi Controller để đẩy dữ liệu xuống Database
             string errorMessage = _controller.Register(fullName, email, pass);
 
             if (errorMessage != null)
@@ -49,8 +50,6 @@ namespace BookStore.View.Auth
             else
             {
                 MessageBox.Show("Đăng ký tài khoản thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
-
-                // Chuyển hướng về màn hình Đăng nhập
                 LoginWindow loginWindow = new LoginWindow();
                 loginWindow.Show();
                 this.Close();
@@ -62,6 +61,40 @@ namespace BookStore.View.Auth
             LoginWindow loginWindow = new LoginWindow();
             loginWindow.Show();
             this.Close();
+        }
+
+        // Sự kiện ẩn/hiện mật khẩu
+        private void TogglePassword_Click(object sender, MouseButtonEventArgs e)
+        {
+            if (txtPassword.Visibility == Visibility.Visible)
+            {
+                txtPasswordVisible.Text = txtPassword.Password;
+                txtPassword.Visibility = Visibility.Collapsed;
+                txtPasswordVisible.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                txtPassword.Password = txtPasswordVisible.Text;
+                txtPasswordVisible.Visibility = Visibility.Collapsed;
+                txtPassword.Visibility = Visibility.Visible;
+            }
+        }
+
+        // Sự kiện ẩn/hiện mật khẩu xác nhận
+        private void ToggleConfirmPassword_Click(object sender, MouseButtonEventArgs e)
+        {
+            if (txtConfirmPassword.Visibility == Visibility.Visible)
+            {
+                txtConfirmPasswordVisible.Text = txtConfirmPassword.Password;
+                txtConfirmPassword.Visibility = Visibility.Collapsed;
+                txtConfirmPasswordVisible.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                txtConfirmPassword.Password = txtConfirmPasswordVisible.Text;
+                txtConfirmPasswordVisible.Visibility = Visibility.Collapsed;
+                txtConfirmPassword.Visibility = Visibility.Visible;
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using BookStore.Controllers;
+using BookStore.Utilities;
 
 namespace BookStore.View.Admin
 {
@@ -13,67 +14,92 @@ namespace BookStore.View.Admin
             InitializeComponent();
             _controller = new AccountController();
 
-            // Gọi hàm lấy dữ liệu đổ lên DataGrid ngay khi mở cửa sổ
+            // Bảo mật: Đảm bảo chỉ ADMIN mới được vào màn hình này
+            if (GlobalSession.Role != "ADMIN")
+            {
+                MessageBox.Show("Chỉ ADMIN mới có quyền truy cập chức năng này!", "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                this.Close();
+                return;
+            }
+
             LoadData();
         }
 
         private void LoadData()
         {
             string keyword = txtSearch.Text.Trim();
-            string role = "";
+            string role = "ALL";
 
-            if (cboRoleFilter.SelectedItem is ComboBoxItem selectedItem && selectedItem.Tag != null)
+            if (cmbRoleFilter.SelectedItem is ComboBoxItem selectedItem)
             {
                 role = selectedItem.Tag.ToString();
             }
 
-            // Lấy List<TbAccount> từ Controller và gán vào DataGrid
             dgAccounts.ItemsSource = _controller.GetAccounts(keyword, role);
         }
 
-        private void BtnSearch_Click(object sender, RoutedEventArgs e)
+        private void TxtSearch_TextChanged(object sender, TextChangedEventArgs e)
         {
-            LoadData();
+            LoadData(); // Tự động load lại khi gõ tìm kiếm
         }
 
-        private void BtnAddAccount_Click(object sender, RoutedEventArgs e)
+        private void CmbRoleFilter_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            MessageBox.Show("Sẽ làm Window thêm tài khoản ở bước tiếp theo.", "Thông báo");
-            // new View.Admin.AddAccountWindow().ShowDialog();
-            // LoadData();
+            if (dgAccounts != null) LoadData(); // Tự động load lại khi đổi bộ lọc
         }
 
-        private void BtnEdit_Click(object sender, RoutedEventArgs e)
-        {
-            if (sender is Button btn && btn.Tag is int accountId)
-            {
-                MessageBox.Show($"Sẽ làm Window sửa cho tài khoản ID: {accountId}", "Thông báo");
-                // new View.Admin.EditAccountWindow(accountId).ShowDialog();
-                // LoadData();
-            }
-        }
-
+        // ADM-01: Khóa/Mở khóa
         private void BtnToggleStatus_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is Button btn && btn.Tag is int accountId)
+            if (sender is Button btn && btn.CommandParameter is int accountId)
             {
-                var confirm = MessageBox.Show("Bạn có chắc muốn đổi trạng thái (Khóa/Mở) tài khoản này?",
-                                              "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-
-                if (confirm == MessageBoxResult.Yes)
+                MessageBoxResult ask = MessageBox.Show($"Bạn có chắc chắn muốn thay đổi trạng thái của tài khoản ID {accountId}?", "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (ask == MessageBoxResult.Yes)
                 {
-                    bool success = _controller.ToggleAccountStatus(accountId);
-                    if (success)
+                    string result = _controller.ToggleAccountStatus(accountId);
+                    if (result == null)
                     {
-                        LoadData(); // Load lại bảng sau khi update
+                        LoadData(); // Cập nhật lại grid
                     }
                     else
                     {
-                        MessageBox.Show("Không thể thay đổi trạng thái tài khoản ADMIN.", "Lỗi phân quyền",
-                                        MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show(result, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
             }
+        }
+
+        // ADM-02: Phân quyền (Thay đổi Role)
+        private void BtnChangeRole_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.CommandParameter is int accountId)
+            {
+                // Gọi Dialog chọn quyền
+                RoleDialogWindow dialog = new RoleDialogWindow();
+                dialog.Owner = this; // Đặt cửa sổ cha là cửa sổ hiện tại
+
+                if (dialog.ShowDialog() == true)
+                {
+                    string newRole = dialog.SelectedRole;
+
+                    // Gọi hàm cập nhật xuống Database
+                    string result = _controller.UpdateAccountRole(accountId, newRole);
+
+                    if (result == null)
+                    {
+                        MessageBox.Show("Cập nhật quyền thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
+                        LoadData(); // Load lại bảng DataGrid
+                    }
+                    else
+                    {
+                        MessageBox.Show(result, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+            }
+        }
+        private void BtnAddAccount_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Chức năng thêm tài khoản nội bộ.", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 }

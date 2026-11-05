@@ -1,39 +1,143 @@
 ﻿<Window x:Class="BookStore.View.Auth.RegisterWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Đăng ký tài khoản — Booky Mart" Height="550" Width="450" WindowStartupLocation="CenterScreen">
-    <Grid Margin="30">
-        <StackPanel VerticalAlignment="Center">
-            <TextBlock Text="Tạo tài khoản mới" FontSize="26" FontWeight="Bold" Margin="0,0,0,5" Foreground="#1e2632"/>
-            <TextBlock Text="Đăng ký để bắt đầu mua sắm tại Booky Mart" FontSize="14" Foreground="#7f8c8d" Margin="0,0,0,20"/>
+        xmlns:shared="clr-namespace:BookStore.View.Shared"
+        Title="Đăng ký tài khoản — Booky Mart" Height="750" Width="1050" WindowStartupLocation="CenterScreen">
 
-            <TextBlock Text="Họ và tên *" FontWeight="SemiBold" Margin="0,0,0,5"/>
-            <TextBox x:Name="txtFullName" Padding="8" Margin="0,0,0,15" FontSize="14"/>
+    <Window.Resources>
+        <Style x:Key="PrimaryButton" TargetType="Button">
+            <Setter Property="Background" Value="#C2542D"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="0,12">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
 
-            <TextBlock Text="Địa chỉ email *" FontWeight="SemiBold" Margin="0,0,0,5"/>
-            <TextBox x:Name="txtEmail" Padding="8" Margin="0,0,0,15" FontSize="14"/>
+    <Grid Background="#Fcfbfa">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
-            <TextBlock Text="Mật khẩu *" FontWeight="SemiBold" Margin="0,0,0,5"/>
-            <PasswordBox x:Name="txtPassword" Padding="8" Margin="0,0,0,15" FontSize="14"/>
+        <shared:HeaderControl Grid.Row="0"/>
 
-            <TextBlock Text="Xác nhận mật khẩu *" FontWeight="SemiBold" Margin="0,0,0,5"/>
-            <PasswordBox x:Name="txtConfirmPassword" Padding="8" Margin="0,0,0,20" FontSize="14"/>
+        <Border Grid.Row="1" Width="850" Height="620" Background="White" CornerRadius="15" BorderBrush="#e0e0e0" BorderThickness="1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="4.5*"/>
+                    <ColumnDefinition Width="5.5*"/>
+                </Grid.ColumnDefinitions>
 
-            <CheckBox x:Name="chkAgreeTerms" Content="Tôi đồng ý với Điều khoản dịch vụ và Chính sách bảo mật." Margin="0,0,0,20"/>
+                <Border Grid.Column="0" Background="#1e2632" CornerRadius="15" Margin="10" Padding="30">
+                    <Grid>
+                        <StackPanel VerticalAlignment="Top" Margin="0,40,0,0">
+                            <TextBlock Text="📖" FontSize="30" Foreground="#C2542D" Margin="0,0,0,15"/>
+                            <TextBlock Text="Cùng bạn kiến tạo không gian sống và học tập." FontSize="24" FontWeight="Bold" Foreground="White" TextWrapping="Wrap" Margin="0,0,0,10"/>
+                            <TextBlock Text="Dù là đắm mình vào những trang sách hay tỉ mỉ cùng những món đồ văn phòng phẩm, chúng mình ở đây để đồng hành cùng bạn trong từng khoảnh khắc sáng tạo mỗi ngày." 
+                                       FontSize="12" Foreground="#b0bec5" TextWrapping="Wrap" LineHeight="20"/>
+                        </StackPanel>
 
-            <Button Content="Tạo tài khoản" Click="BtnRegister_Click" 
-                    Background="#C2542D" Foreground="White" FontSize="16" FontWeight="Bold" Padding="10" BorderThickness="0">
-                <Button.Resources>
-                    <Style TargetType="Border">
-                        <Setter Property="CornerRadius" Value="8"/>
-                    </Style>
-                </Button.Resources>
-            </Button>
+                        <StackPanel VerticalAlignment="Bottom" Orientation="Horizontal" HorizontalAlignment="Center">
+                            <StackPanel Margin="0,0,20,0">
+                                <TextBlock Text="Chọn lọc" FontWeight="Bold" Foreground="#C2542D" FontSize="16"/>
+                                <TextBlock Text="Tri thức" Foreground="#888" FontSize="10"/>
+                            </StackPanel>
+                            <StackPanel Margin="0,0,20,0">
+                                <TextBlock Text="Cảm hứng" FontWeight="Bold" Foreground="#C2542D" FontSize="16"/>
+                                <TextBlock Text="Sáng tạo" Foreground="#888" FontSize="10"/>
+                            </StackPanel>
+                            <StackPanel>
+                                <TextBlock Text="Tận tâm" FontWeight="Bold" Foreground="#C2542D" FontSize="16"/>
+                                <TextBlock Text="Đồng hành" Foreground="#888" FontSize="10"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+                </Border>
 
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
-                <TextBlock Text="Đã có tài khoản? " Foreground="#7f8c8d"/>
-                <TextBlock Text="Đăng nhập ngay" Foreground="#C2542D" FontWeight="Bold" Cursor="Hand" MouseLeftButtonDown="NavToLogin_Click"/>
-            </StackPanel>
-        </StackPanel>
+                <!-- Form Đăng ký -->
+                <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
+                    <StackPanel VerticalAlignment="Center" Margin="50,20">
+                        <TextBlock Text="Tạo tài khoản mới" FontSize="24" FontWeight="Bold" Foreground="#1e2632"/>
+                        <TextBlock Text="Đăng ký để bắt đầu mua sắm tại Booky Mart" FontSize="12" Foreground="#888" Margin="0,5,0,20"/>
+
+                        <TextBlock Text="Họ và tên *" FontSize="11" Foreground="#555" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <Border Background="#F4F4F5" CornerRadius="6" Padding="10,8" Margin="0,0,0,12">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="👤" Grid.Column="0" Margin="0,0,10,0"/>
+                                <TextBox x:Name="txtFullName" Grid.Column="1" Background="Transparent" BorderThickness="0" VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+
+                        <TextBlock Text="Địa chỉ email *" FontSize="11" Foreground="#555" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <Border Background="#F4F4F5" CornerRadius="6" Padding="10,8" Margin="0,0,0,12">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="✉️" Grid.Column="0" Margin="0,0,10,0"/>
+                                <TextBox x:Name="txtEmail" Grid.Column="1" Background="Transparent" BorderThickness="0" VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+
+                        <!-- Khung Mật khẩu Đăng ký -->
+                        <TextBlock Text="Mật khẩu *" FontSize="11" Foreground="#555" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <Border Background="#F4F4F5" CornerRadius="6" Padding="10,8" Margin="0,0,0,5">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="🔒" Grid.Column="0" Margin="0,0,10,0"/>
+                                <PasswordBox x:Name="txtPassword" Grid.Column="1" Background="Transparent" BorderThickness="0" VerticalAlignment="Center"/>
+                                <TextBox x:Name="txtPasswordVisible" Grid.Column="1" Background="Transparent" BorderThickness="0" VerticalAlignment="Center" Visibility="Collapsed"/>
+                                <TextBlock Text="👁️" Grid.Column="2" Foreground="#888" Cursor="Hand" MouseLeftButtonDown="TogglePassword_Click"/>
+                            </Grid>
+                        </Border>
+
+                        <TextBlock Text="✔️ 8-64 ký tự      ✔️ Có ít nhất 1 chữ cái      ✔️ Có ít nhất 1 chữ số" FontSize="10" Foreground="#2ecc71" Margin="0,0,0,12"/>
+
+                        <!-- Khung Xác nhận mật khẩu -->
+                        <TextBlock Text="Xác nhận mật khẩu *" FontSize="11" Foreground="#555" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <Border Background="#F4F4F5" CornerRadius="6" Padding="10,8" Margin="0,0,0,15">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="🔒" Grid.Column="0" Margin="0,0,10,0"/>
+                                <PasswordBox x:Name="txtConfirmPassword" Grid.Column="1" Background="Transparent" BorderThickness="0" VerticalAlignment="Center"/>
+                                <TextBox x:Name="txtConfirmPasswordVisible" Grid.Column="1" Background="Transparent" BorderThickness="0" VerticalAlignment="Center" Visibility="Collapsed"/>
+                                <TextBlock Text="👁️" Grid.Column="2" Foreground="#888" Cursor="Hand" MouseLeftButtonDown="ToggleConfirmPassword_Click"/>
+                            </Grid>
+                        </Border>
+
+                        <CheckBox x:Name="chkAgreeTerms" Content="Tôi đồng ý với Điều khoản dịch vụ và Chính sách bảo mật." FontSize="11" Foreground="#555" Margin="0,0,0,20"/>
+
+                        <Button Content="Tạo tài khoản" Style="{StaticResource PrimaryButton}" Click="BtnRegister_Click"/>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,15,0,0">
+                            <TextBlock Text="Đã có tài khoản? " FontSize="11" Foreground="#888"/>
+                            <TextBlock Text="Đăng nhập ngay" FontSize="11" Foreground="#C2542D" FontWeight="Bold" Cursor="Hand" MouseLeftButtonDown="NavToLogin_Click"/>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </Border>
     </Grid>
 </Window>

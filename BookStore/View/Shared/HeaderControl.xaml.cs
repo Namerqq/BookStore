@@ -1,7 +1,9 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using BookStore.Utilities;
 using BookStore.View.Auth;
+using BookStore.View.Customer; // Thêm để gọi được HomeWindow và ProfileWindow
 
 namespace BookStore.View.Shared
 {
@@ -29,6 +31,7 @@ namespace BookStore.View.Shared
         {
             if (string.IsNullOrEmpty(GlobalSession.FullName))
             {
+                // Chưa đăng nhập -> Chuyển tới trang Login
                 LoginWindow loginWindow = new LoginWindow();
                 loginWindow.Show();
 
@@ -37,8 +40,52 @@ namespace BookStore.View.Shared
             }
             else
             {
-                MessageBox.Show($"Đang đăng nhập với quyền: {GlobalSession.Role}", "Thông tin tài khoản");
+                // Đã đăng nhập -> Hiển thị tùy chọn: Xem Hồ sơ cá nhân hoặc Đăng xuất
+                MessageBoxResult result = MessageBox.Show(
+                    $"Xin chào, {GlobalSession.FullName}!\n\nBạn có muốn ĐĂNG XUẤT khỏi hệ thống không?\n(Nhấn 'Yes' để Đăng xuất, 'No' để mở Hồ sơ cá nhân)",
+                    "Tài khoản cá nhân",
+                    MessageBoxButton.YesNoCancel,
+                    MessageBoxImage.Question);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    // 1. XỬ LÝ ĐĂNG XUẤT
+                    GlobalSession.AccountId = 0;
+                    GlobalSession.FullName = null;
+                    GlobalSession.Role = null;
+
+                    // Load lại trang chủ với tư cách khách vãng lai
+                    HomeWindow homeWindow = new HomeWindow();
+                    homeWindow.Show();
+
+                    Window parentWindow = Window.GetWindow(this);
+                    parentWindow?.Close();
+                }
+                else if (result == MessageBoxResult.No)
+                {
+                    // 2. MỞ TRANG HỒ SƠ CÁ NHÂN (PROFILE)
+                    ProfileWindow profileWindow = new ProfileWindow();
+                    profileWindow.Owner = Window.GetWindow(this);
+                    profileWindow.ShowDialog();
+                }
+                // Nếu bấm Cancel thì không làm gì cả, ở lại trang hiện tại
             }
+        }
+
+        // Sự kiện khi click vào chữ Booky.Mart (Logo)
+        private void Logo_Click(object sender, MouseButtonEventArgs e)
+        {
+            Window currentWindow = Window.GetWindow(this);
+
+            if (currentWindow is HomeWindow)
+            {
+                return;
+            }
+
+            HomeWindow homeWindow = new HomeWindow();
+            homeWindow.Show();
+
+            currentWindow?.Close();
         }
     }
 }

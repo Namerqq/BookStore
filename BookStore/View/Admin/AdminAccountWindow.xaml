@@ -1,56 +1,81 @@
 ﻿<Window x:Class="BookStore.View.Admin.AdminAccountWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Quản lý tài khoản — Admin | Booky Mart" Height="600" Width="1000" WindowStartupLocation="CenterScreen">
-    <Grid Margin="20">
+        Title="Quản lý Tài khoản &amp; Phân quyền" Height="700" Width="1000" WindowStartupLocation="CenterScreen">
+
+    <Grid Background="#F4F4F5" Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" Margin="0,0,0,20">
-            <TextBlock Text="Quản lý tài khoản" FontSize="24" FontWeight="Bold" Foreground="#1e2632"/>
-            <TextBlock Text="Tạo, sửa, vô hiệu hóa tài khoản Staff và Manager" FontSize="14" Foreground="#7f8c8d"/>
-        </StackPanel>
+        <!-- Tiêu đề -->
+        <TextBlock Grid.Row="0" Text="Quản lý Tài khoản" FontSize="24" FontWeight="Bold" Foreground="#1e2632" Margin="0,0,0,20"/>
 
-        <Grid Grid.Row="1" Margin="0,0,0,15">
+        <!-- Thanh công cụ: Tìm kiếm & Lọc -->
+        <Grid Grid.Row="1" Margin="0,0,0,20">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="300"/>
+                <ColumnDefinition Width="150"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <StackPanel Orientation="Horizontal" Grid.Column="0">
-                <TextBox x:Name="txtSearch" Width="250" Padding="8" Margin="0,0,10,0" ToolTip="Tìm theo tên, email..."/>
-                <ComboBox x:Name="cboRoleFilter" Width="120" Padding="5" Margin="0,0,10,0">
-                    <ComboBoxItem Content="Tất cả vai trò" Tag="" IsSelected="True"/>
-                    <ComboBoxItem Content="CUSTOMER" Tag="CUSTOMER"/>
-                    <ComboBoxItem Content="STAFF" Tag="STAFF"/>
-                    <ComboBoxItem Content="MANAGER" Tag="MANAGER"/>
-                    <ComboBoxItem Content="ADMIN" Tag="ADMIN"/>
-                </ComboBox>
-                <Button Content="Tìm kiếm" Click="BtnSearch_Click" Padding="15,5" Background="#1e2632" Foreground="White" BorderThickness="0"/>
-            </StackPanel>
+            <!-- Tìm kiếm -->
+            <Border Grid.Column="0" Background="White" CornerRadius="6" BorderBrush="#ddd" BorderThickness="1" Padding="10,5" Margin="0,0,15,0">
+                <Grid>
+                    <TextBlock Text="🔍 Tìm Email, Họ tên..." Foreground="#999" VerticalAlignment="Center" Margin="5,0,0,0" IsHitTestVisible="False"/>
+                    <TextBox x:Name="txtSearch" Background="Transparent" BorderThickness="0" VerticalAlignment="Center" TextChanged="TxtSearch_TextChanged"/>
+                </Grid>
+            </Border>
 
-            <Button Grid.Column="1" Content="+ Thêm tài khoản" Click="BtnAddAccount_Click" 
-                    Background="#C2542D" Foreground="White" FontWeight="Bold" Padding="15,8" BorderThickness="0"/>
+            <!-- Lọc Role -->
+            <ComboBox x:Name="cmbRoleFilter" Grid.Column="1" VerticalAlignment="Center" Height="32" SelectionChanged="CmbRoleFilter_SelectionChanged">
+                <ComboBoxItem Content="Tất cả quyền" Tag="ALL" IsSelected="True"/>
+                <ComboBoxItem Content="ADMIN" Tag="ADMIN"/>
+                <ComboBoxItem Content="MANAGER" Tag="MANAGER"/>
+                <ComboBoxItem Content="STAFF" Tag="STAFF"/>
+                <ComboBoxItem Content="CUSTOMER" Tag="CUSTOMER"/>
+            </ComboBox>
+
+            <!-- Nút Thêm mới -->
+            <Button Grid.Column="3" Content="+ Thêm tài khoản" Background="#C2542D" Foreground="White" FontWeight="Bold" Padding="15,5" BorderThickness="0" Cursor="Hand" Click="BtnAddAccount_Click"/>
         </Grid>
 
-        <DataGrid Grid.Row="2" x:Name="dgAccounts" AutoGenerateColumns="False" CanUserAddRows="False" 
-                  IsReadOnly="True" Background="White" RowHeight="40" AlternatingRowBackground="#f9f9f9" HeadersVisibility="Column">
+        <!-- DataGrid Hiển thị danh sách -->
+        <DataGrid x:Name="dgAccounts" Grid.Row="2" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" 
+                  Background="White" BorderBrush="#ddd" BorderThickness="1" RowHeight="40" HeadersVisibility="Column">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Họ tên" Binding="{Binding FullName}" Width="2*"/>
-                <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="2*"/>
-                <DataGridTextColumn Header="SĐT" Binding="{Binding Phone}" Width="1.5*"/>
-                <DataGridTextColumn Header="Vai trò" Binding="{Binding Role}" Width="1*"/>
-                <DataGridTextColumn Header="Trạng thái" Binding="{Binding Status}" Width="1*"/>
+                <DataGridTextColumn Header="ID" Binding="{Binding AccountId}" Width="50"/>
+                <DataGridTextColumn Header="Họ và tên" Binding="{Binding FullName}" Width="200"/>
+                <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="250"/>
+                <DataGridTextColumn Header="Quyền (Role)" Binding="{Binding Role}" Width="120"/>
 
-                <DataGridTemplateColumn Header="Thao tác" Width="1.5*">
+                <!-- Hiển thị Trạng thái bằng màu sắc -->
+                <!-- Đã bỏ Converter đổi màu để hết lỗi -->
+                <DataGridTemplateColumn Header="Trạng thái" Width="100">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Border CornerRadius="4" Padding="5,2" HorizontalAlignment="Center" VerticalAlignment="Center"
+                    Background="#1e2632">
+                                <TextBlock Text="{Binding Status}" Foreground="White" FontSize="11" FontWeight="Bold"/>
+                            </Border>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+           
+
+                <!-- Cột Hành động (Phân quyền & Khóa) -->
+                <DataGridTemplateColumn Header="Hành động" Width="*">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <Button Content="Sửa" Click="BtnEdit_Click" Tag="{Binding AccountId}" Margin="0,0,5,0" Padding="10,2" Background="#f1c40f" BorderThickness="0"/>
-                                <Button Content="Khóa/Mở" Click="BtnToggleStatus_Click" Tag="{Binding AccountId}" Padding="10,2" Background="#e74c3c" Foreground="White" BorderThickness="0"/>
+                                <Button Content="Phân quyền" Background="#1e2632" Foreground="White" Margin="0,0,5,0" Padding="10,2" Cursor="Hand"
+                                        CommandParameter="{Binding AccountId}" Click="BtnChangeRole_Click"/>
+
+                                <Button Content="Khóa/Mở" Background="#e74c3c" Foreground="White" Padding="10,2" Cursor="Hand"
+                                        CommandParameter="{Binding AccountId}" Click="BtnToggleStatus_Click"/>
                             </StackPanel>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>

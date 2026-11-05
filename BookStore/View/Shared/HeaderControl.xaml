@@ -11,7 +11,8 @@
             </Grid.ColumnDefinitions>
 
             <!-- Logo -->
-            <TextBlock Grid.Column="0" Text="Booky.Mart" FontSize="22" FontWeight="Bold" Foreground="#1e2632" VerticalAlignment="Center" Margin="0,0,30,0"/>
+            <TextBlock Grid.Column="0" Text="Booky.Mart" FontSize="22" FontWeight="Bold" Foreground="#1e2632" VerticalAlignment="Center" Margin="0,0,30,0" 
+           Cursor="Hand" MouseLeftButtonDown="Logo_Click" ToolTip="Về trang chủ"/>
 
             <!-- Menu điều hướng -->
             <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">

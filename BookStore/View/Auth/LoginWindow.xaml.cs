@@ -1,63 +1,87 @@
 ﻿using System.Windows;
 using System.Windows.Input;
-using BookStore.Controllers;
 using BookStore.Utilities;
+using BookStore.View.Customer; // Namespace cho HomeWindow của khách hàng
+using BookStore.View.Admin;    // Bổ sung namespace này để gọi AdminLayoutWindow
 
 namespace BookStore.View.Auth
 {
     public partial class LoginWindow : Window
     {
-        private readonly AccountController _controller;
-
         public LoginWindow()
         {
             InitializeComponent();
-            _controller = new AccountController();
         }
 
         private void BtnLogin_Click(object sender, RoutedEventArgs e)
         {
             string email = txtEmail.Text.Trim();
-            string password = txtPassword.Password;
+            // Lấy mật khẩu dựa trên trạng thái (đang ẩn hay hiện)
+            string pass = txtPassword.Visibility == Visibility.Visible ? txtPassword.Password : txtPasswordVisible.Text;
 
-            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(pass))
             {
-                MessageBox.Show("Vui lòng nhập đầy đủ email và mật khẩu!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Vui lòng nhập Email và Mật khẩu!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            // Gọi hàm Login từ AccountController
-            string errorMessage = _controller.Login(email, password);
+            var _controller = new BookStore.Controllers.AccountController();
+            string error = _controller.Login(email, pass);
 
-            if (errorMessage != null)
+            if (error != null)
             {
-                MessageBox.Show(errorMessage, "Lỗi đăng nhập", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(error, "Lỗi đăng nhập", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             else
             {
-                MessageBox.Show($"Đăng nhập thành công! Chào {GlobalSession.FullName}.", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
-
-                // Điều hướng dựa vào Role
-                if (GlobalSession.Role == "ADMIN")
+                // ĐĂNG NHẬP THÀNH CÔNG: Điều hướng phân quyền chuẩn xác
+                if (GlobalSession.Role == "CUSTOMER")
                 {
-                    View.Admin.AdminAccountWindow adminWindow = new View.Admin.AdminAccountWindow();
-                    adminWindow.Show();
+                    // Khách hàng -> Mở HomeWindow (Trang chủ mua sắm)
+                    HomeWindow homeWindow = new HomeWindow();
+                    homeWindow.Show();
                 }
                 else
                 {
-                    MessageBox.Show("Chuyển hướng cho các vai trò khác sẽ được cập nhật sau.", "Thông báo");
+                    // Admin / Manager / Staff -> Mở AdminLayoutWindow (Giao diện quản trị viên)
+                    AdminLayoutWindow adminWindow = new AdminLayoutWindow();
+                    adminWindow.Show();
                 }
 
-                this.Close(); // Đóng cửa sổ đăng nhập
+                // Đóng cửa sổ Login hiện tại an toàn bằng .Close()
+                this.Close();
             }
         }
 
-        private void NavToRegister_Click(object sender, MouseButtonEventArgs e)
+        private void LinkRegister_Click(object sender, MouseButtonEventArgs e)
         {
-            // Mở cửa sổ đăng ký và đóng cửa sổ đăng nhập hiện tại
-            RegisterWindow registerWindow = new RegisterWindow();
-            registerWindow.Show();
+            RegisterWindow register = new RegisterWindow();
+            register.Show();
             this.Close();
+        }
+
+        private void LinkForgotPassword_Click(object sender, MouseButtonEventArgs e)
+        {
+            // Xử lý mở cửa sổ Quên mật khẩu
+        }
+
+        // Sự kiện ẩn/hiện mật khẩu
+        private void TogglePassword_Click(object sender, MouseButtonEventArgs e)
+        {
+            if (txtPassword.Visibility == Visibility.Visible)
+            {
+                // Hiện mật khẩu dưới dạng text thường
+                txtPasswordVisible.Text = txtPassword.Password;
+                txtPassword.Visibility = Visibility.Collapsed;
+                txtPasswordVisible.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                // Ẩn mật khẩu (dấu chấm)
+                txtPassword.Password = txtPasswordVisible.Text;
+                txtPasswordVisible.Visibility = Visibility.Collapsed;
+                txtPassword.Visibility = Visibility.Visible;
+            }
         }
     }
 }
