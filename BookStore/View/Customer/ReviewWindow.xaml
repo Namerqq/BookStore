@@ -1,0 +1,23 @@
+﻿<Window x:Class="BookStore.View.Customer.ReviewWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Đánh giá sản phẩm" Height="220" Width="420" WindowStartupLocation="CenterOwner" Language="vi-VN" Loaded="Window_Loaded">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/BookStore;component/View/Shared/OrderFlowStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <!-- Bản tạm để project build được. Người B thay bằng màn hình đánh giá thật, giữ constructor ReviewWindow(int orderDetailId). -->
+    <Grid Background="#F4F4F5">
+        <Border Style="{StaticResource Card}" Margin="16">
+            <StackPanel VerticalAlignment="Center">
+                <TextBlock Text="Chức năng đánh giá đang được phát triển." TextAlignment="Center" Margin="0,0,0,14"/>
+                <Button Content="Đóng" Style="{StaticResource QuietBtn}" HorizontalAlignment="Center" IsCancel="True"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

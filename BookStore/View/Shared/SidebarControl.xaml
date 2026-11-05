@@ -72,6 +72,8 @@
                 <Button x:Name="btnProducts" Content="📦  Quản lý Sản phẩm" Style="{StaticResource MenuButtonStyle}" Click="MenuProducts_Click"/>
                 <Button x:Name="btnAccounts" Content="👥  Quản lý Tài khoản" Style="{StaticResource MenuButtonStyle}" Click="MenuAccounts_Click"/>
                 <Button x:Name="btnVouchers" Content="🏷  Quản lý Khuyến mãi" Style="{StaticResource MenuButtonStyle}" Click="MenuVouchers_Click"/>
+                <Button x:Name="btnOrders" Content="🧾  Xử lý Đơn hàng" Style="{StaticResource MenuButtonStyle}" Click="MenuOrders_Click" Visibility="Collapsed"/>
+                <Button x:Name="btnRefunds" Content="💸  Xác nhận Hoàn tiền" Style="{StaticResource MenuButtonStyle}" Click="MenuRefunds_Click" Visibility="Collapsed"/>
             </StackPanel>
 
             <!-- 3. NÚT ĐĂNG XUẤT Ở DƯỚI CÙNG -->

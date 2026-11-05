@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using BookStore.View.Manager;
+using BookStore.View.Staff;
 using BookStore.View.Admin;
 using BookStore.View.Auth;
 using BookStore.Utilities;
@@ -23,12 +24,14 @@ namespace BookStore.View.Shared
             {
                 btnAccounts.Visibility = Visibility.Collapsed;
                 btnVouchers.Visibility = Visibility.Collapsed;
+                btnOrders.Visibility = Visibility.Visible;
             }
             else if (role == "MANAGER")
             {
                 // MANAGER được phép quản lý khuyến mãi, ẩn quản lý tài khoản hệ thống
                 btnAccounts.Visibility = Visibility.Collapsed;
                 btnVouchers.Visibility = Visibility.Visible;
+                btnRefunds.Visibility = Visibility.Visible;
             }
             else if (role == "ADMIN")
             {
@@ -51,6 +54,16 @@ namespace BookStore.View.Shared
         {
             VoucherManagementWindow voucherWindow = new VoucherManagementWindow();
             voucherWindow.ShowDialog();
+        }
+
+        private void MenuOrders_Click(object sender, RoutedEventArgs e)
+        {
+            new StaffOrderWindow { Owner = Window.GetWindow(this) }.ShowDialog();
+        }
+
+        private void MenuRefunds_Click(object sender, RoutedEventArgs e)
+        {
+            new RefundWindow { Owner = Window.GetWindow(this) }.ShowDialog();
         }
 
         private void MenuLogout_Click(object sender, RoutedEventArgs e)
