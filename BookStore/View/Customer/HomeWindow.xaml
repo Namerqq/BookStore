@@ -40,7 +40,7 @@
                     </Grid>
                 </Border>
 
-                <!-- 1. PHẦN ƯU ĐÃI HÔM NAY (Lấy từ tbVoucher) -->
+                <!-- 1. PHẦN ƯU ĐÃI HÔM NAY -->
                 <StackPanel Margin="40,25,40,10">
                     <TextBlock Text="ƯU ĐÃI HÔM NAY" FontSize="12" Foreground="#888" FontWeight="Bold"/>
                     <TextBlock Text="Bóc mã, giảm liền tay" FontSize="22" FontWeight="Bold" Foreground="#1e2632" Margin="0,5,0,15"/>
@@ -74,7 +74,7 @@
                     </ItemsControl>
                 </StackPanel>
 
-                <!-- 2. PHẦN DANH MỤC (Lấy từ tbCategory) -->
+                <!-- 2. PHẦN DANH MỤC -->
                 <StackPanel Margin="40,20,40,10">
                     <TextBlock Text="DANH MỤC" FontSize="12" Foreground="#888" FontWeight="Bold"/>
                     <TextBlock Text="Bạn đang tìm gì hôm nay?" FontSize="22" FontWeight="Bold" Foreground="#1e2632" Margin="0,5,0,15"/>
@@ -99,14 +99,16 @@
                     </ItemsControl>
                 </StackPanel>
 
-                <!-- 3. PHẦN BÁN CHẠY (Lấy từ tbProduct) -->
+                <!-- 3. PHẦN BÁN CHẠY -->
                 <StackPanel Margin="40,20,40,10">
                     <Grid>
                         <StackPanel>
                             <TextBlock Text="BÁN CHẠY" FontSize="12" Foreground="#888" FontWeight="Bold"/>
                             <TextBlock Text="Được yêu thích nhất tuần này" FontSize="22" FontWeight="Bold" Foreground="#1e2632" Margin="0,5,0,15"/>
                         </StackPanel>
-                        <TextBlock Text="Xem tất cả →" Foreground="#C2542D" FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Center" Cursor="Hand"/>
+                        <!-- QUAN TRỌNG: Đã có x:Name="txtViewAllProducts" -->
+                        <TextBlock Text="Xem tất cả →" Foreground="#C2542D" FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Center" Cursor="Hand"
+                                   x:Name="txtViewAllProducts" MouseDown="TxtViewAllProducts_MouseDown"/>
                     </Grid>
 
                     <ItemsControl x:Name="ProductListControl">
@@ -125,10 +127,9 @@
                                             <RowDefinition Height="Auto"/>
                                         </Grid.RowDefinitions>
 
-                                        <!-- Khung chứa ảnh bìa sách lấy từ DB -->
+                                        <!-- Khung chứa ảnh bìa sách -->
                                         <Border Background="#f5f5f5" CornerRadius="6" ClipToBounds="True">
                                             <Grid>
-                                                <!-- LƯU Ý: Đổi chữ 'ImagePath' nếu cột ảnh trong Model của bạn có tên khác (vd: ImageUrl, Cover) -->
                                                 <Image Source="{Binding ImagePath}" Stretch="UniformToFill"/>
 
                                                 <Border Background="#5b6b4f" CornerRadius="4" Width="35" Height="20" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8">

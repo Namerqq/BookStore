@@ -6,29 +6,30 @@ namespace BookStore.Controllers
 {
     public class HomeController
     {
-        private readonly DbSe2038BookymartFContext _context;
-
-        public HomeController()
-        {
-            _context = new DbSe2038BookymartFContext();
-        }
-
-        // Lấy danh sách voucher từ bảng tbVoucher
         public List<TbVoucher> GetActiveVouchers()
         {
-            return _context.TbVouchers.Where(v => v.Status == "ACTIVE").ToList();
+            using var context = new DbSe2038BookymartFContext();
+            return context.TbVouchers.ToList();
         }
 
-        // Lấy danh sách danh mục từ bảng tbCategory
         public List<TbCategory> GetCategories()
         {
-            return _context.TbCategories.ToList();
+            using var context = new DbSe2038BookymartFContext();
+            return context.TbCategories.ToList();
         }
 
-        // Lấy danh sách sản phẩm từ bảng tbProduct
+        // Sửa TbProduct thành TbProducts
         public List<TbProduct> GetFeaturedProducts()
         {
-            return _context.TbProducts.Take(8).ToList(); // Lấy tối đa 8 sản phẩm lên trang chủ
+            using var context = new DbSe2038BookymartFContext();
+            return context.TbProducts.Take(10).ToList();
+        }
+
+        // Sửa TbProduct thành TbProducts
+        public List<TbProduct> GetAllProducts()
+        {
+            using var context = new DbSe2038BookymartFContext();
+            return context.TbProducts.ToList();
         }
     }
 }

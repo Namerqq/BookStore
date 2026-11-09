@@ -1,15 +1,17 @@
 ﻿using System.Windows;
+using System.Windows.Input;
 using BookStore.Controllers;
 using BookStore.DAO;
 using BookStore.Models;
 using BookStore.Utilities;
-using BookStore.View.Auth; // Thêm namespace này để gọi LoginWindow
+using BookStore.View.Auth;
 
 namespace BookStore.View.Customer
 {
     public partial class HomeWindow : Window
     {
         private readonly HomeController _controller;
+        private bool _isExpanded = false; // Biến cờ kiểm soát trạng thái Xem tất cả / Thu gọn
 
         public HomeWindow()
         {
@@ -22,10 +24,28 @@ namespace BookStore.View.Customer
         {
             VoucherListControl.ItemsSource = _controller.GetActiveVouchers();
             CategoryListControl.ItemsSource = _controller.GetCategories();
+
+            // Mặc định load 10 mục
             ProductListControl.ItemsSource = _controller.GetFeaturedProducts();
         }
 
-        // Nút "+" trên thẻ sản phẩm: thêm 1 sản phẩm vào giỏ (CartDAO của phần 3)
+        // Sự kiện khi bấm vào chữ "Xem tất cả →" / "Thu gọn ←"
+        private void TxtViewAllProducts_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (!_isExpanded)
+            {
+                ProductListControl.ItemsSource = _controller.GetAllProducts();
+                txtViewAllProducts.Text = "Thu gọn ←";
+                _isExpanded = true;
+            }
+            else
+            {
+                ProductListControl.ItemsSource = _controller.GetFeaturedProducts();
+                txtViewAllProducts.Text = "Xem tất cả →";
+                _isExpanded = false;
+            }
+        }
+
         private void BtnAddToCart_Click(object sender, RoutedEventArgs e)
         {
             if ((sender as FrameworkElement)?.DataContext is not TbProduct product) return;
@@ -34,7 +54,6 @@ namespace BookStore.View.Customer
             UiGuard.Run(() => UiGuard.ShowResult(CartDAO.AddToCart(product.ProductId, 1), $"Đã thêm “{product.Name}” vào giỏ hàng."));
         }
 
-        // Nút "Lưu mã" trên thẻ voucher (tbSavedVoucher của phần 3)
         private void BtnSaveVoucher_Click(object sender, RoutedEventArgs e)
         {
             if ((sender as FrameworkElement)?.DataContext is not TbVoucher voucher) return;
@@ -52,12 +71,11 @@ namespace BookStore.View.Customer
             return false;
         }
 
-        // Sự kiện khi bấm nút Login trên Header
         private void BtnLogin_Click(object sender, RoutedEventArgs e)
         {
             LoginWindow loginWindow = new LoginWindow();
             loginWindow.Show();
-            this.Close(); // Đóng trang chủ hiện tại lại
+            this.Close();
         }
     }
 }

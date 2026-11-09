@@ -163,5 +163,41 @@ namespace BookStore.Controllers
 
             return query.OrderByDescending(log => log.CreatedAt).ToList();
         }
+        public string AdminAddAccount(string fullName, string email, string password, string role)
+        {
+            using var context = new DbSe2038BookymartFContext();
+
+            bool isExist = context.TbAccounts.Any(a => a.Email.ToLower() == email.ToLower());
+            if (isExist)
+            {
+                return "Email này đã tồn tại trong hệ thống! Vui lòng dùng Email khác.";
+            }
+
+            var newAccount = new TbAccount
+            {
+                FullName = fullName,
+                Email = email,
+                PasswordHash = password,
+                Role = role,
+                Status = "ACTIVE"
+            };
+
+            context.TbAccounts.Add(newAccount);
+            context.SaveChanges();
+
+            return null;
+        }
+        public string DeleteAccount(int accountId)
+        {
+            using var context = new DbSe2038BookymartFContext();
+            var acc = context.TbAccounts.Find(accountId);
+            if (acc != null)
+            {
+                context.TbAccounts.Remove(acc);
+                context.SaveChanges();
+                return null; // Thành công
+            }
+            return "Không tìm thấy tài khoản cần xóa!";
+        }
     }
 }

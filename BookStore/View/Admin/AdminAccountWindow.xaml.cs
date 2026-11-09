@@ -97,9 +97,43 @@ namespace BookStore.View.Admin
                 }
             }
         }
+
+        // Nút Mở Form Thêm Tài Khoản Mới
         private void BtnAddAccount_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Chức năng thêm tài khoản nội bộ.", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+            // Gọi mở cửa sổ nhập thông tin tài khoản mới
+            AddAccountDialogWindow addDialog = new AddAccountDialogWindow();
+            addDialog.Owner = this;
+
+            // Nếu thêm thành công (DialogResult == true), tiến hành load lại danh sách
+            if (addDialog.ShowDialog() == true)
+            {
+                LoadData();
+            }
+        }
+
+        // Nút Xóa Tài Khoản
+        private void BtnDeleteAccount_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.CommandParameter is int accountId)
+            {
+                MessageBoxResult ask = MessageBox.Show("Bạn có chắc chắn muốn xóa vĩnh viễn tài khoản này không?", "Xác nhận xóa", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+                if (ask == MessageBoxResult.Yes)
+                {
+                    string result = _controller.DeleteAccount(accountId);
+
+                    if (result == null)
+                    {
+                        MessageBox.Show("Đã xóa tài khoản thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                        LoadData();
+                    }
+                    else
+                    {
+                        MessageBox.Show(result, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+            }
         }
     }
 }
