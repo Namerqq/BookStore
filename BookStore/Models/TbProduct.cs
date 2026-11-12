@@ -1,5 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 
 namespace BookStore.Models;
 
@@ -50,4 +52,22 @@ public partial class TbProduct
     public virtual ICollection<TbProductImage> TbProductImages { get; set; } = new List<TbProductImage>();
 
     public virtual ICollection<TbReview> TbReviews { get; set; } = new List<TbReview>();
+
+    /// <summary>
+    /// URL ảnh đại diện của sản phẩm (ưu tiên ảnh thumbnail và thứ tự hiển thị).
+    /// </summary>
+    [NotMapped]
+    public string? ThumbnailUrl
+    {
+        get
+        {
+            var url = TbProductImages?
+                .OrderByDescending(img => img.IsThumbnail)
+                .ThenBy(img => img.DisplayOrder)
+                .Select(img => img.ImageUrl)
+                .FirstOrDefault(u => !string.IsNullOrWhiteSpace(u));
+
+            return string.IsNullOrWhiteSpace(url) ? null : url.Trim();
+        }
+    }
 }

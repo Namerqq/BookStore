@@ -52,21 +52,18 @@
                 <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="250"/>
                 <DataGridTextColumn Header="Quyền (Role)" Binding="{Binding Role}" Width="120"/>
 
-                <!-- Hiển thị Trạng thái bằng màu sắc -->
-                <!-- Đã bỏ Converter đổi màu để hết lỗi -->
                 <DataGridTemplateColumn Header="Trạng thái" Width="100">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Border CornerRadius="4" Padding="5,2" HorizontalAlignment="Center" VerticalAlignment="Center"
-                    Background="#1e2632">
+                                    Background="#1e2632">
                                 <TextBlock Text="{Binding Status}" Foreground="White" FontSize="11" FontWeight="Bold"/>
                             </Border>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-           
 
-                <!-- Cột Hành động (Phân quyền & Khóa) -->
+                <!-- Cột Hành động (Phân quyền, Khóa & Xóa) -->
                 <DataGridTemplateColumn Header="Hành động" Width="*">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
@@ -74,8 +71,11 @@
                                 <Button Content="Phân quyền" Background="#1e2632" Foreground="White" Margin="0,0,5,0" Padding="10,2" Cursor="Hand"
                                         CommandParameter="{Binding AccountId}" Click="BtnChangeRole_Click"/>
 
-                                <Button Content="Khóa/Mở" Background="#e74c3c" Foreground="White" Padding="10,2" Cursor="Hand"
+                                <Button Content="Khóa/Mở" Background="#F39C12" Foreground="White" Margin="0,0,5,0" Padding="10,2" Cursor="Hand"
                                         CommandParameter="{Binding AccountId}" Click="BtnToggleStatus_Click"/>
+
+                                <Button Content="Xóa" Background="#E74C3C" Foreground="White" Padding="10,2" Cursor="Hand"
+                                        CommandParameter="{Binding AccountId}" Click="BtnDeleteAccount_Click"/>
                             </StackPanel>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>

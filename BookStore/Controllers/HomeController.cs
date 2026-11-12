@@ -1,4 +1,5 @@
-﻿using BookStore.Models;
+using BookStore.Models;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,29 +7,49 @@ namespace BookStore.Controllers
 {
     public class HomeController
     {
-        private readonly DbSe2038BookymartFContext _context;
-
-        public HomeController()
-        {
-            _context = new DbSe2038BookymartFContext();
-        }
-
-        // Lấy danh sách voucher từ bảng tbVoucher
         public List<TbVoucher> GetActiveVouchers()
         {
-            return _context.TbVouchers.Where(v => v.Status == "ACTIVE").ToList();
+            using var context = new DbSe2038BookymartFContext();
+            return context.TbVouchers.ToList();
         }
 
-        // Lấy danh sách danh mục từ bảng tbCategory
         public List<TbCategory> GetCategories()
         {
-            return _context.TbCategories.ToList();
+            using var context = new DbSe2038BookymartFContext();
+            return context.TbCategories
+                .AsNoTracking()
+                .OrderBy(c => c.Name)
+                .ToList();
         }
 
-        // Lấy danh sách sản phẩm từ bảng tbProduct
-        public List<TbProduct> GetFeaturedProducts()
+        // Sửa TbProduct thành TbProducts
+        public List<TbProduct> GetFeaturedProducts() => LoadProducts(limit: 10);
+
+        // Sửa TbProduct thành TbProducts
+        public List<TbProduct> GetAllProducts() => LoadProducts();
+
+        public List<TbProduct> GetProductsByCategory(int categoryId) => LoadProducts(categoryId: categoryId);
+
+        private static List<TbProduct> LoadProducts(int? limit = null, int? categoryId = null)
         {
-            return _context.TbProducts.Take(8).ToList(); // Lấy tối đa 8 sản phẩm lên trang chủ
+            using var context = new DbSe2038BookymartFContext();
+            IQueryable<TbProduct> query = context.TbProducts
+                .AsNoTracking()
+                .Include(p => p.TbProductImages);
+
+            if (categoryId.HasValue)
+            {
+                query = query.Where(p => p.CategoryId == categoryId.Value);
+            }
+
+            query = query.OrderBy(p => p.ProductId);
+
+            if (limit.HasValue)
+            {
+                query = query.Take(limit.Value);
+            }
+
+            return query.ToList();
         }
     }
 }
