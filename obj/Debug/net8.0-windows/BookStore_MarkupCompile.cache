@@ -1,0 +1,20 @@
+﻿BookStore
+
+
+winexe
+C#
+.cs
+C:\Users\TRINH HOANG DUNG\Downloads\BookStore-phan1\BookStore-phan1\BookStore\obj\Debug\net8.0-windows\
+BookStore
+none
+false
+TRACE;DEBUG;NET;NET8_0;NETCOREAPP;WINDOWS;WINDOWS7_0;NET5_0_OR_GREATER;NET6_0_OR_GREATER;NET7_0_OR_GREATER;NET8_0_OR_GREATER;NETCOREAPP1_0_OR_GREATER;NETCOREAPP1_1_OR_GREATER;NETCOREAPP2_0_OR_GREATER;NETCOREAPP2_1_OR_GREATER;NETCOREAPP2_2_OR_GREATER;NETCOREAPP3_0_OR_GREATER;NETCOREAPP3_1_OR_GREATER;WINDOWS7_0_OR_GREATER
+C:\Users\TRINH HOANG DUNG\Downloads\BookStore-phan1\BookStore-phan1\BookStore\App.xaml
+29-246761445
+
+712136388750
+234-817741220
+MainWindow.xaml;View\Admin\AddAccountDialogWindow.xaml;View\Admin\AdminAccountWindow.xaml;View\Admin\AdminLayoutWindow.xaml;View\Admin\EditAccountDialogWindow.xaml;View\Admin\RoleDialogWindow.xaml;View\Admin\SystemLogWindow.xaml;View\Auth\LoginWindow.xaml;View\Auth\RegisterWindow.xaml;View\Customer\AddressBookWindow.xaml;View\Customer\CartWindow.xaml;View\Customer\CheckoutWindow.xaml;View\Customer\HomeWindow.xaml;View\Customer\OrderDetailWindow.xaml;View\Customer\OrderHistoryWindow.xaml;View\Customer\OrderSuccessWindow.xaml;View\Customer\ProductDetailWindow.xaml;View\Customer\ProfileWindow.xaml;View\Customer\ReviewWindow.xaml;View\Manager\DashboardWindow.xaml;View\Manager\ProductManageWindow.xaml;View\Manager\RefundWindow.xaml;View\Manager\VoucherManagementWindow.xaml;View\Shared\FooterControl.xaml;View\Shared\HeaderControl.xaml;View\Shared\OrderFlowStyles.xaml;View\Shared\ReasonDialog.xaml;View\Shared\SidebarControl.xaml;View\Staff\StaffOrderWindow.xaml;
+
+False
+
