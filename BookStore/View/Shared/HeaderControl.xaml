@@ -31,11 +31,13 @@
 
             <!-- Nút Đăng nhập & Giỏ hàng -->
             <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center">
+                <Button x:Name="BtnOrders" Content="📦 Đơn hàng" Click="BtnOrders_Click" Background="Transparent" Foreground="#333" FontWeight="SemiBold" BorderThickness="0" Margin="0,0,12,0" Cursor="Hand" Visibility="Collapsed"/>
+                <Button x:Name="BtnAddresses" Content="📍 Địa chỉ" Click="BtnAddresses_Click" Background="Transparent" Foreground="#333" FontWeight="SemiBold" BorderThickness="0" Margin="0,0,12,0" Cursor="Hand" Visibility="Collapsed"/>
                 <Border Background="#f5f5f5" CornerRadius="18" Padding="12,6" Margin="0,0,10,0" Cursor="Hand">
                     <Button x:Name="BtnAuth" Content="👤 Login" Click="BtnAuth_Click" Background="Transparent" Foreground="#333" FontWeight="SemiBold" BorderThickness="0" Cursor="Hand"/>
                 </Border>
-                <Border Background="#f5f5f5" CornerRadius="18" Width="36" Height="36" Cursor="Hand">
-                    <TextBlock Text="🛒" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="14"/>
+                <Border x:Name="CartBox" Background="#f5f5f5" CornerRadius="18" Width="36" Height="36" Cursor="Hand">
+                    <Button x:Name="BtnCart" Content="🛒" Click="BtnCart_Click" Background="Transparent" BorderThickness="0" FontSize="14" Cursor="Hand" ToolTip="Giỏ hàng"/>
                 </Border>
             </StackPanel>
         </Grid>
