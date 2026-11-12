@@ -1,0 +1,108 @@
+<Window x:Class="BookStore.View.Customer.ProductDetailWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Chi tiết sản phẩm — Booky Mart" Height="700" Width="980" WindowStartupLocation="CenterOwner" Language="vi-VN" Loaded="Window_Loaded">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/BookStore;component/View/Shared/OrderFlowStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid Background="#F4F4F5">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="24">
+                <!-- Khối chính: Ảnh & Thông tin -->
+                <Border Style="{StaticResource Card}" Margin="0,0,0,18">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="320"/>
+                            <ColumnDefinition Width="24"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Ảnh sản phẩm -->
+                        <Border Grid.Column="0" Background="#F5F5F5" CornerRadius="10" Height="360" ClipToBounds="True">
+                            <Grid>
+                                <TextBlock x:Name="txtNoImage" Text="Không có ảnh" Foreground="#94A3B8" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <Image x:Name="imgProduct" Stretch="UniformToFill"/>
+                            </Grid>
+                        </Border>
+
+                        <!-- Thông tin chi tiết -->
+                        <StackPanel Grid.Column="2">
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                <Border Background="#1e2632" CornerRadius="4" Padding="8,3" Margin="0,0,8,0">
+                                    <TextBlock x:Name="txtTypeBadge" Foreground="White" FontSize="11" FontWeight="SemiBold"/>
+                                </Border>
+                                <TextBlock x:Name="txtCategory" Foreground="#64748B" FontSize="12" VerticalAlignment="Center"/>
+                                <TextBlock x:Name="txtSku" Foreground="#94A3B8" FontSize="12" VerticalAlignment="Center" Margin="12,0,0,0"/>
+                            </StackPanel>
+
+                            <TextBlock x:Name="txtName" FontSize="24" FontWeight="Bold" Foreground="#0F172A" TextWrapping="Wrap" Margin="0,0,0,8"/>
+
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                                <TextBlock x:Name="txtRatingSummary" FontSize="13" FontWeight="SemiBold" Foreground="#D97706"/>
+                                <TextBlock x:Name="txtStockInfo" FontSize="13" Margin="16,0,0,0" FontWeight="SemiBold"/>
+                            </StackPanel>
+
+                            <TextBlock x:Name="txtPrice" FontSize="26" FontWeight="Bold" Foreground="#C2542D" Margin="0,0,0,14"/>
+
+                            <!-- Thông số chi tiết (Sách / VPP) -->
+                            <Border Background="#F8FAFC" CornerRadius="8" Padding="12" Margin="0,0,0,14">
+                                <StackPanel x:Name="pnlSpecs">
+                                    <TextBlock x:Name="txtSpec1" Margin="0,0,0,4" Visibility="Collapsed"/>
+                                    <TextBlock x:Name="txtSpec2" Margin="0,0,0,4" Visibility="Collapsed"/>
+                                    <TextBlock x:Name="txtSpec3" Margin="0,0,0,4" Visibility="Collapsed"/>
+                                    <TextBlock x:Name="txtWeight" Foreground="#475569" FontSize="12"/>
+                                </StackPanel>
+                            </Border>
+
+                            <TextBlock Text="Mô tả sản phẩm" Style="{StaticResource FieldLabel}"/>
+                            <TextBlock x:Name="txtDescription" TextWrapping="Wrap" Foreground="#334155" Margin="0,0,0,18" LineHeight="20"/>
+
+                            <!-- Chọn số lượng & Thêm vào giỏ -->
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="Số lượng:" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,10,0"/>
+                                <Button Content="-" Style="{StaticResource SmallBtn}" Width="32" Height="34" Click="BtnMinus_Click"/>
+                                <TextBox x:Name="txtQuantity" Text="1" Width="52" Height="34" TextAlignment="Center" VerticalContentAlignment="Center" Margin="6,0" BorderBrush="#CBD5E1"/>
+                                <Button Content="+" Style="{StaticResource SmallBtn}" Width="32" Height="34" Click="BtnPlus_Click"/>
+
+                                <Button x:Name="btnAddToCart" Content="🛒 Thêm vào giỏ hàng" Style="{StaticResource PrimaryBtn}" Margin="16,0,0,0" Padding="20,10" Click="BtnAddToCart_Click"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- Đánh giá sản phẩm -->
+                <Border Style="{StaticResource Card}">
+                    <StackPanel>
+                        <TextBlock x:Name="txtReviewsHeading" Text="Đánh giá từ khách hàng" Style="{StaticResource SectionTitle}"/>
+                        <TextBlock x:Name="txtNoReviews" Text="Chưa có đánh giá nào cho sản phẩm này." Style="{StaticResource MutedText}" Visibility="Collapsed"/>
+
+                        <ItemsControl x:Name="icReviews">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border BorderBrush="#E2E8F0" BorderThickness="0,0,0,1" Padding="0,10">
+                                        <StackPanel>
+                                            <Grid Margin="0,0,0,4">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="{Binding ReviewerName}" FontWeight="SemiBold" Margin="0,0,10,0"/>
+                                                    <TextBlock Text="{Binding StarsText}" Foreground="#D97706" FontSize="13"/>
+                                                </StackPanel>
+                                                <TextBlock Text="{Binding CreatedAt, StringFormat={}{0:dd/MM/yyyy HH:mm}}" Style="{StaticResource MutedText}" HorizontalAlignment="Right"/>
+                                            </Grid>
+                                            <TextBlock Text="{Binding Comment}" TextWrapping="Wrap" Foreground="#334155"/>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Window>

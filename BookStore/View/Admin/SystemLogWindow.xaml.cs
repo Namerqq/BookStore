@@ -13,15 +13,11 @@ namespace BookStore.View.Admin
         {
             InitializeComponent();
             _controller = new AccountController();
+        }
 
-            // Phân quyền: Chỉ ADMIN được xem nhật ký hệ thống
-            if (GlobalSession.Role != "ADMIN")
-            {
-                MessageBox.Show("Chỉ ADMIN mới có quyền xem Nhật ký hệ thống!", "Từ chối truy cập", MessageBoxButton.OK, MessageBoxImage.Error);
-                this.Close();
-                return;
-            }
-
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (!UiGuard.RequireRole(this, SessionGuard.RoleAdmin)) return;
             LoadData();
         }
 
@@ -33,12 +29,15 @@ namespace BookStore.View.Admin
 
         private void TxtSearch_TextChanged(object sender, TextChangedEventArgs e)
         {
-            LoadData(); // Tìm kiếm theo thời gian thực khi gõ phím
+            txtSearchPlaceholder.Visibility = string.IsNullOrEmpty(txtSearch.Text)
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+            if (IsLoaded) LoadData();
         }
 
         private void BtnRefresh_Click(object sender, RoutedEventArgs e)
         {
-            txtSearch.Text = "";
+            txtSearch.Text = string.Empty;
             LoadData();
         }
     }

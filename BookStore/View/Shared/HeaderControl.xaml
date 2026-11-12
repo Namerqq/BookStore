@@ -11,21 +11,22 @@
             </Grid.ColumnDefinitions>
 
             <!-- Logo -->
-            <TextBlock Grid.Column="0" Text="Booky.Mart" FontSize="22" FontWeight="Bold" Foreground="#1e2632" VerticalAlignment="Center" Margin="0,0,30,0" 
-           Cursor="Hand" MouseLeftButtonDown="Logo_Click" ToolTip="Về trang chủ"/>
+            <TextBlock Grid.Column="0" Text="Booky.Mart" FontSize="22" FontWeight="Bold" Foreground="#1e2632" VerticalAlignment="Center" Margin="0,0,30,0"
+                       Cursor="Hand" MouseLeftButtonDown="Logo_Click" ToolTip="Về trang chủ"/>
 
             <!-- Menu điều hướng -->
             <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                <Button Content="Sách" Background="Transparent" Foreground="#333" FontWeight="SemiBold" BorderThickness="0" Margin="0,0,20,0" Cursor="Hand"/>
-                <Button Content="Văn phòng phẩm" Background="Transparent" Foreground="#333" FontWeight="SemiBold" BorderThickness="0" Margin="0,0,20,0" Cursor="Hand"/>
-                <Button Content="Khuyến mãi" Background="Transparent" Foreground="#333" FontWeight="SemiBold" BorderThickness="0" Cursor="Hand"/>
+                <Button Content="Sách" Click="BtnBooks_Click" Background="Transparent" Foreground="#333" FontWeight="SemiBold" BorderThickness="0" Margin="0,0,20,0" Cursor="Hand"/>
+                <Button Content="Văn phòng phẩm" Click="BtnStationery_Click" Background="Transparent" Foreground="#333" FontWeight="SemiBold" BorderThickness="0" Margin="0,0,20,0" Cursor="Hand"/>
+                <Button Content="Khuyến mãi" Click="BtnPromotions_Click" Background="Transparent" Foreground="#333" FontWeight="SemiBold" BorderThickness="0" Cursor="Hand"/>
             </StackPanel>
 
             <!-- Ô tìm kiếm -->
-            <Border Grid.Column="2" Background="#f5f5f5" CornerRadius="20" Height="36" Width="280" HorizontalAlignment="Center" Padding="12,0">
+            <Border Grid.Column="2" Background="#f5f5f5" CornerRadius="20" Height="36" Width="280" HorizontalAlignment="Center" Padding="14,0">
                 <Grid>
-                    <TextBlock Text="🔍 Tìm sách, bút, sổ tay..." Foreground="#999" VerticalAlignment="Center" FontSize="12"/>
-                    <TextBox Background="Transparent" BorderThickness="0" VerticalAlignment="Center" FontSize="12"/>
+                    <TextBlock x:Name="txtSearchPlaceholder" Text="🔍 Tìm sách, tác giả, SKU..." Foreground="#999" VerticalAlignment="Center" FontSize="12" IsHitTestVisible="False"/>
+                    <TextBox x:Name="txtSearch" Background="Transparent" BorderThickness="0" VerticalAlignment="Center" FontSize="12"
+                             TextChanged="TxtSearch_TextChanged" KeyDown="TxtSearch_KeyDown"/>
                 </Grid>
             </Border>
 
