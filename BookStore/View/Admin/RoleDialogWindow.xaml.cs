@@ -5,7 +5,7 @@ namespace BookStore.View.Admin
 {
     public partial class RoleDialogWindow : Window
     {
-        public string SelectedRole { get; private set; }
+        public string SelectedRole { get; private set; } = string.Empty;
 
         public RoleDialogWindow()
         {
@@ -14,10 +14,10 @@ namespace BookStore.View.Admin
 
         private void BtnSave_Click(object sender, RoutedEventArgs e)
         {
-            if (cmbRoles.SelectedItem is ComboBoxItem selectedItem)
+            if (cmbRoles.SelectedItem is ComboBoxItem selectedItem && selectedItem.Tag != null)
             {
-                SelectedRole = selectedItem.Tag.ToString();
-                this.DialogResult = true; // Trả về true báo hiệu đã lưu
+                SelectedRole = selectedItem.Tag.ToString() ?? string.Empty;
+                DialogResult = true;
             }
             else
             {
@@ -27,7 +27,7 @@ namespace BookStore.View.Admin
 
         private void BtnCancel_Click(object sender, RoutedEventArgs e)
         {
-            this.DialogResult = false; // Trả về false báo hiệu hủy
+            DialogResult = false;
         }
     }
 }

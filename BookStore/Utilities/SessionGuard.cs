@@ -6,6 +6,7 @@
         public const string RoleCustomer = "CUSTOMER";
         public const string RoleStaff = "STAFF";
         public const string RoleManager = "MANAGER";
+        public const string RoleAdmin = "ADMIN";
 
         public static int CurrentAccountId => GlobalSession.AccountId ?? 0;
 

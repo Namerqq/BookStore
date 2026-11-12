@@ -8,12 +8,12 @@ namespace BookStore.DAO
     {
         private const int MaxLength = 255;
 
-        public static void Add(DbSe2038BookymartFContext context, string action)
+        public static void Add(DbSe2038BookymartFContext context, string action, int? accountId = null)
         {
-            int accountId = SessionGuard.CurrentAccountId;
+            int resolvedId = accountId ?? SessionGuard.CurrentAccountId;
             context.TbActivityLogs.Add(new TbActivityLog
             {
-                AccountId = accountId > 0 ? accountId : null,
+                AccountId = resolvedId > 0 ? resolvedId : null,
                 Action = action.Length > MaxLength ? action.Substring(0, MaxLength) : action,
                 CreatedAt = DateTime.Now
             });

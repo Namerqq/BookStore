@@ -1,7 +1,4 @@
 ﻿using System.Windows;
-using BookStore.View.Manager;
-using BookStore.View.Admin;
-using BookStore.View.Auth;
 using BookStore.Utilities;
 
 namespace BookStore.View.Admin
@@ -13,38 +10,19 @@ namespace BookStore.View.Admin
             InitializeComponent();
         }
 
-        // 1. Sự kiện mở Quản lý Khuyến mãi / Voucher (Thay thế thông báo cũ)
-        private void BtnVouchers_Click(object sender, RoutedEventArgs e)
+        private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            VoucherManagementWindow voucherWindow = new VoucherManagementWindow();
-            voucherWindow.Owner = this;
-            voucherWindow.ShowDialog();
-        }
+            if (!UiGuard.RequireRole(this, SessionGuard.RoleStaff, SessionGuard.RoleManager, SessionGuard.RoleAdmin))
+                return;
 
-        // 2. Sự kiện mở Quản lý Tài khoản (ADM-01 & ADM-02)
-        private void BtnAccounts_Click(object sender, RoutedEventArgs e)
-        {
-            AdminAccountWindow accountWindow = new AdminAccountWindow();
-            accountWindow.Owner = this;
-            accountWindow.ShowDialog();
-        }
-
-        // 3. Sự kiện Đăng xuất khỏi hệ thống quản trị
-        private void BtnLogout_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBoxResult ask = MessageBox.Show("Bạn có muốn đăng xuất khỏi hệ thống quản trị?", "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if (ask == MessageBoxResult.Yes)
+            txtWelcomeTitle.Text = $"Xin chào, {GlobalSession.FullName} ({GlobalSession.Role})";
+            txtRoleSummary.Text = GlobalSession.Role switch
             {
-                // Xóa session
-                GlobalSession.AccountId = 0;
-                GlobalSession.FullName = null;
-                GlobalSession.Role = null;
-
-                // Quay lại màn hình Login
-                LoginWindow loginWindow = new LoginWindow();
-                loginWindow.Show();
-                this.Close();
-            }
+                SessionGuard.RoleStaff => "Bạn đang đăng nhập với vai trò Nhân viên (STAFF). Chọn mục 'Xử lý Đơn hàng' bên trái để duyệt đơn, xác nhận VietQR, gọi xác nhận khách và tiếp nhận hoàn hàng.",
+                SessionGuard.RoleManager => "Bạn đang đăng nhập với vai trò Quản lý (MANAGER). Chọn các mục bên trái để xem Dashboard doanh thu, quản lý sản phẩm & tồn kho, voucher và xác nhận hoàn tiền.",
+                SessionGuard.RoleAdmin => "Bạn đang đăng nhập với vai trò Quản trị viên (ADMIN). Chọn các mục bên trái để quản lý tài khoản, phân quyền và theo dõi nhật ký hệ thống.",
+                _ => string.Empty
+            };
         }
     }
 }

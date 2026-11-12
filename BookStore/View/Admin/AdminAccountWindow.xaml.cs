@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using BookStore.Controllers;
+using BookStore.Models;
 using BookStore.Utilities;
 
 namespace BookStore.View.Admin
@@ -13,15 +14,11 @@ namespace BookStore.View.Admin
         {
             InitializeComponent();
             _controller = new AccountController();
+        }
 
-            // Bảo mật: Đảm bảo chỉ ADMIN mới được vào màn hình này
-            if (GlobalSession.Role != "ADMIN")
-            {
-                MessageBox.Show("Chỉ ADMIN mới có quyền truy cập chức năng này!", "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
-                this.Close();
-                return;
-            }
-
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (!UiGuard.RequireRole(this, SessionGuard.RoleAdmin)) return;
             LoadData();
         }
 
@@ -30,9 +27,9 @@ namespace BookStore.View.Admin
             string keyword = txtSearch.Text.Trim();
             string role = "ALL";
 
-            if (cmbRoleFilter.SelectedItem is ComboBoxItem selectedItem)
+            if (cmbRoleFilter.SelectedItem is ComboBoxItem selectedItem && selectedItem.Tag != null)
             {
-                role = selectedItem.Tag.ToString();
+                role = selectedItem.Tag.ToString() ?? "ALL";
             }
 
             dgAccounts.ItemsSource = _controller.GetAccounts(keyword, role);
@@ -40,12 +37,27 @@ namespace BookStore.View.Admin
 
         private void TxtSearch_TextChanged(object sender, TextChangedEventArgs e)
         {
-            LoadData(); // Tự động load lại khi gõ tìm kiếm
+            txtSearchPlaceholder.Visibility = string.IsNullOrEmpty(txtSearch.Text)
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+            if (IsLoaded) LoadData();
         }
 
         private void CmbRoleFilter_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (dgAccounts != null) LoadData(); // Tự động load lại khi đổi bộ lọc
+            if (IsLoaded && dgAccounts != null) LoadData();
+        }
+
+        // ADM-01: Sửa thông tin tài khoản (bao gồm tài khoản nội bộ)
+        private void BtnEditAccount_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.DataContext is not TbAccount account) return;
+
+            var dialog = new EditAccountDialogWindow(account) { Owner = this };
+            if (dialog.ShowDialog() == true)
+            {
+                LoadData();
+            }
         }
 
         // ADM-01: Khóa/Mở khóa
@@ -53,13 +65,15 @@ namespace BookStore.View.Admin
         {
             if (sender is Button btn && btn.CommandParameter is int accountId)
             {
-                MessageBoxResult ask = MessageBox.Show($"Bạn có chắc chắn muốn thay đổi trạng thái của tài khoản ID {accountId}?", "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                MessageBoxResult ask = MessageBox.Show(
+                    $"Bạn có chắc chắn muốn thay đổi trạng thái của tài khoản ID {accountId}?",
+                    "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (ask == MessageBoxResult.Yes)
                 {
-                    string result = _controller.ToggleAccountStatus(accountId);
+                    string? result = _controller.ToggleAccountStatus(accountId);
                     if (result == null)
                     {
-                        LoadData(); // Cập nhật lại grid
+                        LoadData();
                     }
                     else
                     {
@@ -74,21 +88,17 @@ namespace BookStore.View.Admin
         {
             if (sender is Button btn && btn.CommandParameter is int accountId)
             {
-                // Gọi Dialog chọn quyền
-                RoleDialogWindow dialog = new RoleDialogWindow();
-                dialog.Owner = this; // Đặt cửa sổ cha là cửa sổ hiện tại
+                RoleDialogWindow dialog = new RoleDialogWindow { Owner = this };
 
                 if (dialog.ShowDialog() == true)
                 {
                     string newRole = dialog.SelectedRole;
-
-                    // Gọi hàm cập nhật xuống Database
-                    string result = _controller.UpdateAccountRole(accountId, newRole);
+                    string? result = _controller.UpdateAccountRole(accountId, newRole);
 
                     if (result == null)
                     {
                         MessageBox.Show("Cập nhật quyền thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
-                        LoadData(); // Load lại bảng DataGrid
+                        LoadData();
                     }
                     else
                     {
@@ -97,9 +107,42 @@ namespace BookStore.View.Admin
                 }
             }
         }
+
+        // Nút Mở Form Thêm Tài Khoản Mới
         private void BtnAddAccount_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Chức năng thêm tài khoản nội bộ.", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+            AddAccountDialogWindow addDialog = new AddAccountDialogWindow { Owner = this };
+
+            if (addDialog.ShowDialog() == true)
+            {
+                LoadData();
+            }
+        }
+
+        // Nút Xóa Tài Khoản
+        private void BtnDeleteAccount_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.CommandParameter is int accountId)
+            {
+                MessageBoxResult ask = MessageBox.Show(
+                    "Bạn có chắc chắn muốn xóa vĩnh viễn tài khoản này không?",
+                    "Xác nhận xóa", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+                if (ask == MessageBoxResult.Yes)
+                {
+                    string? result = _controller.DeleteAccount(accountId);
+
+                    if (result == null)
+                    {
+                        MessageBox.Show("Đã xóa tài khoản thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                        LoadData();
+                    }
+                    else
+                    {
+                        MessageBox.Show(result, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+            }
         }
     }
 }

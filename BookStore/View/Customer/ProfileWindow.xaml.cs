@@ -18,25 +18,23 @@ namespace BookStore.View.Customer
 
         private void LoadUserProfile()
         {
-            // 1. Kiểm tra Null hoặc bằng 0
-            if (GlobalSession.AccountId == null || GlobalSession.AccountId == 0)
+            if (!SessionGuard.IsLoggedIn)
             {
                 MessageBox.Show("Vui lòng đăng nhập để xem thông tin!", "Yêu cầu", MessageBoxButton.OK, MessageBoxImage.Information);
-                this.Close();
+                Close();
                 return;
             }
 
-            // 2. Load dữ liệu từ DB lên Form (ĐÃ SỬA: Thêm .Value)
-            var account = _controller.GetAccountById(GlobalSession.AccountId.Value);
+            var account = _controller.GetAccountById(SessionGuard.CurrentAccountId);
             if (account != null)
             {
                 txtEmail.Text = account.Email;
                 txtFullName.Text = account.FullName;
-                txtPhone.Text = account.Phone;
+                txtPhone.Text = account.Phone ?? string.Empty;
             }
 
-            // 3. ÁP DỤNG RULE: Chỉ Admin được sửa thông tin tài khoản nội bộ
-            if (GlobalSession.Role != "CUSTOMER")
+            // Rule 2.4: Tài khoản nội bộ không được tự sửa thông tin cá nhân, chỉ Admin được sửa
+            if (!SessionGuard.IsCustomer)
             {
                 txtInternalWarning.Visibility = Visibility.Visible;
                 txtFullName.IsEnabled = false;
@@ -46,21 +44,22 @@ namespace BookStore.View.Customer
             }
         }
 
-        // Sự kiện Đổi thông tin
         private void BtnUpdateProfile_Click(object sender, RoutedEventArgs e)
         {
+            if (!SessionGuard.IsLoggedIn) return;
+
             string fullName = txtFullName.Text.Trim();
             string phone = txtPhone.Text.Trim();
 
-            // Validate đơn giản
-            if (string.IsNullOrEmpty(fullName))
+            string? validationError = ValidationUtil.ValidateFullName(fullName)
+                                   ?? ValidationUtil.ValidateOptionalPhone(phone);
+            if (validationError != null)
             {
-                MessageBox.Show("Họ và tên không được để trống!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(validationError, "Dữ liệu không hợp lệ", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            // ĐÃ SỬA: Thêm .Value
-            string result = _controller.UpdateProfile(GlobalSession.AccountId.Value, fullName, phone);
+            string? result = _controller.UpdateProfile(SessionGuard.CurrentAccountId, fullName, phone);
 
             if (result == null)
             {
@@ -72,17 +71,24 @@ namespace BookStore.View.Customer
             }
         }
 
-        // Sự kiện Đổi mật khẩu
         private void BtnChangePassword_Click(object sender, RoutedEventArgs e)
         {
+            if (!SessionGuard.IsLoggedIn) return;
+
             string oldPass = txtOldPassword.Password;
             string newPass = txtNewPassword.Password;
             string confirmPass = txtConfirmNewPassword.Password;
 
-            // Validate
             if (string.IsNullOrEmpty(oldPass) || string.IsNullOrEmpty(newPass))
             {
                 MessageBox.Show("Vui lòng điền đủ mật khẩu cũ và mới!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            string? passError = ValidationUtil.ValidatePassword(newPass);
+            if (passError != null)
+            {
+                MessageBox.Show(passError, "Dữ liệu không hợp lệ", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -92,16 +98,14 @@ namespace BookStore.View.Customer
                 return;
             }
 
-            // ĐÃ SỬA: Thêm .Value
-            string result = _controller.ChangePassword(GlobalSession.AccountId.Value, oldPass, newPass);
+            string? result = _controller.ChangePassword(SessionGuard.CurrentAccountId, oldPass, newPass);
 
             if (result == null)
             {
                 MessageBox.Show("Đổi mật khẩu thành công! Hãy dùng mật khẩu mới cho lần đăng nhập sau.", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
-                // Xóa trống các ô sau khi đổi thành công
-                txtOldPassword.Password = "";
-                txtNewPassword.Password = "";
-                txtConfirmNewPassword.Password = "";
+                txtOldPassword.Clear();
+                txtNewPassword.Clear();
+                txtConfirmNewPassword.Clear();
             }
             else
             {
