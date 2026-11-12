@@ -29,6 +29,15 @@ namespace BookStore.View.Auth
                 return;
             }
 
+            string? validationError = BookStore.Utilities.ValidationUtil.ValidateFullName(fullName)
+                                   ?? BookStore.Utilities.ValidationUtil.ValidateEmail(email)
+                                   ?? BookStore.Utilities.ValidationUtil.ValidatePassword(pass);
+            if (validationError != null)
+            {
+                MessageBox.Show(validationError, "Dữ liệu không hợp lệ", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             if (pass != confirmPass)
             {
                 MessageBox.Show("Mật khẩu xác nhận không khớp!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -41,7 +50,7 @@ namespace BookStore.View.Auth
                 return;
             }
 
-            string errorMessage = _controller.Register(fullName, email, pass);
+            string? errorMessage = _controller.Register(fullName, email, pass);
 
             if (errorMessage != null)
             {

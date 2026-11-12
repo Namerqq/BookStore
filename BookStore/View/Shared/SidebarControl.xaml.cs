@@ -1,10 +1,10 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using BookStore.View.Manager;
-using BookStore.View.Staff;
+using BookStore.Utilities;
 using BookStore.View.Admin;
 using BookStore.View.Auth;
-using BookStore.Utilities;
+using BookStore.View.Manager;
+using BookStore.View.Staff;
 
 namespace BookStore.View.Shared
 {
@@ -13,47 +13,65 @@ namespace BookStore.View.Shared
         public SidebarControl()
         {
             InitializeComponent();
-            ApplyRolePermissions(); // Gọi hàm phân quyền khi load Sidebar
+            ApplyRolePermissions();
         }
 
         private void ApplyRolePermissions()
         {
-            string role = GlobalSession.Role;
+            btnDashboard.Visibility = Visibility.Collapsed;
+            btnProducts.Visibility = Visibility.Collapsed;
+            btnVouchers.Visibility = Visibility.Collapsed;
+            btnRefunds.Visibility = Visibility.Collapsed;
+            btnOrders.Visibility = Visibility.Collapsed;
+            btnAccounts.Visibility = Visibility.Collapsed;
+            btnLogs.Visibility = Visibility.Collapsed;
 
-            if (role == "STAFF")
+            string role = GlobalSession.Role;
+            txtRoleSubtitle.Text = string.IsNullOrEmpty(role)
+                ? "Hệ thống quản lý"
+                : $"Xin chào, {GlobalSession.FullName} ({role})";
+
+            if (role == SessionGuard.RoleStaff)
             {
-                btnAccounts.Visibility = Visibility.Collapsed;
-                btnVouchers.Visibility = Visibility.Collapsed;
                 btnOrders.Visibility = Visibility.Visible;
             }
-            else if (role == "MANAGER")
+            else if (role == SessionGuard.RoleManager)
             {
-                // MANAGER được phép quản lý khuyến mãi, ẩn quản lý tài khoản hệ thống
-                btnAccounts.Visibility = Visibility.Collapsed;
+                btnDashboard.Visibility = Visibility.Visible;
+                btnProducts.Visibility = Visibility.Visible;
                 btnVouchers.Visibility = Visibility.Visible;
                 btnRefunds.Visibility = Visibility.Visible;
             }
-            else if (role == "ADMIN")
+            else if (role == SessionGuard.RoleAdmin)
             {
-                // ADMIN không quản lý khuyến mãi theo yêu cầu của bạn
                 btnAccounts.Visibility = Visibility.Visible;
-                btnVouchers.Visibility = Visibility.Collapsed;   // Ẩn nút Quản lý Khuyến mãi đối với Admin
+                btnLogs.Visibility = Visibility.Visible;
             }
         }
 
-        private void MenuDashboard_Click(object sender, RoutedEventArgs e) { }
-        private void MenuProducts_Click(object sender, RoutedEventArgs e) { }
+        private void MenuDashboard_Click(object sender, RoutedEventArgs e)
+        {
+            new DashboardWindow { Owner = Window.GetWindow(this) }.ShowDialog();
+        }
+
+        private void MenuProducts_Click(object sender, RoutedEventArgs e)
+        {
+            new ProductManageWindow { Owner = Window.GetWindow(this) }.ShowDialog();
+        }
 
         private void MenuAccounts_Click(object sender, RoutedEventArgs e)
         {
-            AdminAccountWindow accountWindow = new AdminAccountWindow();
-            accountWindow.ShowDialog();
+            new AdminAccountWindow { Owner = Window.GetWindow(this) }.ShowDialog();
+        }
+
+        private void MenuLogs_Click(object sender, RoutedEventArgs e)
+        {
+            new SystemLogWindow { Owner = Window.GetWindow(this) }.ShowDialog();
         }
 
         private void MenuVouchers_Click(object sender, RoutedEventArgs e)
         {
-            VoucherManagementWindow voucherWindow = new VoucherManagementWindow();
-            voucherWindow.ShowDialog();
+            new VoucherManagementWindow { Owner = Window.GetWindow(this) }.ShowDialog();
         }
 
         private void MenuOrders_Click(object sender, RoutedEventArgs e)
@@ -71,14 +89,12 @@ namespace BookStore.View.Shared
             MessageBoxResult ask = MessageBox.Show("Bạn có muốn đăng xuất khỏi hệ thống?", "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (ask == MessageBoxResult.Yes)
             {
-                GlobalSession.AccountId = 0;
-                GlobalSession.FullName = null;
-                GlobalSession.Role = null;
+                GlobalSession.Clear();
 
                 LoginWindow loginWindow = new LoginWindow();
                 loginWindow.Show();
 
-                Window parentWindow = Window.GetWindow(this);
+                Window? parentWindow = Window.GetWindow(this);
                 parentWindow?.Close();
             }
         }

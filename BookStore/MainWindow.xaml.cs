@@ -10,34 +10,17 @@ namespace BookStore
         public MainWindow()
         {
             InitializeComponent();
-            NavigateBasedOnRole();
+            Loaded += (_, _) => NavigateBasedOnRole();
         }
 
         private void NavigateBasedOnRole()
         {
-            string role = GlobalSession.Role; // Lấy quyền từ phiên đăng nhập
+            Window target = SessionGuard.HasRole(SessionGuard.RoleAdmin, SessionGuard.RoleManager, SessionGuard.RoleStaff)
+                ? new AdminLayoutWindow()
+                : new HomeWindow();
 
-            if (role == "ADMIN")
-            {
-                // Nếu là Admin, điều hướng sang giao diện quản trị Admin
-                MainFrame.Navigate(new AdminLayoutWindow());
-            }
-            else if (role == "MANAGER")
-            {
-                // Nếu là Manager, điều hướng sang màn hình quản lý (hoặc tạo layout riêng cho Manager)
-                MainFrame.Navigate(new AdminLayoutWindow()); // Tạm dùng chung layout quản trị
-            }
-            else if (role == "STAFF")
-            {
-                // Nếu là Staff, điều hướng sang màn hình nhân viên
-                MessageBox.Show("Đang chuyển đến giao diện Nhân viên...", "Thông báo");
-                // MainFrame.Navigate(new StaffWindow());
-            }
-            else
-            {
-                // Trường hợp là CUSTOMER hoặc Khách vãng lai (Chưa đăng nhập)
-                MainFrame.Navigate(new HomeWindow());
-            }
+            target.Show();
+            Close();
         }
     }
 }

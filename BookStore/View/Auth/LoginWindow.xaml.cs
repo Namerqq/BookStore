@@ -26,7 +26,7 @@ namespace BookStore.View.Auth
             }
 
             var _controller = new BookStore.Controllers.AccountController();
-            string error = _controller.Login(email, pass);
+            string? error = _controller.Login(email, pass);
 
             if (error != null)
             {
@@ -62,7 +62,8 @@ namespace BookStore.View.Auth
 
         private void LinkForgotPassword_Click(object sender, MouseButtonEventArgs e)
         {
-            // Xử lý mở cửa sổ Quên mật khẩu
+            MessageBox.Show("Vui lòng liên hệ Quản trị viên (Admin) của hệ thống để được hỗ trợ đặt lại mật khẩu.",
+                "Quên mật khẩu", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         // Sự kiện ẩn/hiện mật khẩu

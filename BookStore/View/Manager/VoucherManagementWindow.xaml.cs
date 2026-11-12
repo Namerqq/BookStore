@@ -1,12 +1,10 @@
 ﻿using System;
-using System.IO;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using Microsoft.Win32; // Cần thiết để mở hộp thoại lưu file (SaveFileDialog)
+using Microsoft.Win32;
 using BookStore.Controllers;
-using BookStore.Utilities;
 using BookStore.Models;
+using BookStore.Utilities;
 
 namespace BookStore.View.Manager
 {
@@ -18,16 +16,12 @@ namespace BookStore.View.Manager
         {
             InitializeComponent();
             _controller = new VoucherController();
+        }
 
-            // SỬA TẠI ĐÂY: Chỉ cho phép MANAGER truy cập, từ chối ADMIN và các quyền khác
-            if (GlobalSession.Role != "MANAGER")
-            {
-                MessageBox.Show("Chức năng này chỉ dành riêng cho cấp Quản lý (MANAGER)!", "Từ chối truy cập", MessageBoxButton.OK, MessageBoxImage.Error);
-                this.Close();
-                return;
-            }
-
-            dpValidUntil.SelectedDate = DateTime.Now.AddDays(7);
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (!UiGuard.RequireRole(this, SessionGuard.RoleManager)) return;
+            ResetForm();
             LoadData();
         }
 
@@ -39,57 +33,143 @@ namespace BookStore.View.Manager
 
         private void TxtSearch_TextChanged(object sender, TextChangedEventArgs e)
         {
-            LoadData();
+            txtSearchPlaceholder.Visibility = string.IsNullOrEmpty(txtSearch.Text)
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+            if (IsLoaded) LoadData();
         }
 
-        // BẤM VÀO LƯỚI ĐỂ CHUYỂN QUA CHẾ ĐỘ SỬA
+        private void CbDiscountType_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!IsLoaded) return;
+            string type = GetSelectedDiscountType();
+            bool isPercent = type == "PERCENTAGE";
+            lblDiscountValue.Text = isPercent ? "Mức giảm (%) *" : "Mức giảm (VNĐ) *";
+            txtMaxDiscountCap.IsEnabled = isPercent;
+            if (!isPercent) txtMaxDiscountCap.Text = string.Empty;
+        }
+
+        private string GetSelectedDiscountType()
+        {
+            return (cbDiscountType.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? "FIXED";
+        }
+
         private void DgVouchers_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (dgVouchers.SelectedItem is TbVoucher selectedVoucher)
             {
                 txtVoucherId.Text = selectedVoucher.VoucherId.ToString();
                 txtCode.Text = selectedVoucher.Code;
-                txtDiscount.Text = selectedVoucher.DiscountValue.ToString("0");
+
+                foreach (ComboBoxItem item in cbDiscountType.Items)
+                {
+                    if (item.Tag?.ToString() == selectedVoucher.DiscountType)
+                    {
+                        cbDiscountType.SelectedItem = item;
+                        break;
+                    }
+                }
+
+                txtDiscount.Text = selectedVoucher.DiscountValue.ToString("0.##");
+                txtMaxDiscountCap.Text = selectedVoucher.MaxDiscountCap.HasValue
+                    ? selectedVoucher.MaxDiscountCap.Value.ToString("0")
+                    : string.Empty;
                 txtMinOrder.Text = selectedVoucher.MinOrderValue.ToString("0");
-                // dpValidUntil.SelectedDate = selectedVoucher.ValidUntil;
+                dpStartDate.SelectedDate = selectedVoucher.StartDate;
+                dpEndDate.SelectedDate = selectedVoucher.EndDate;
+                txtMaxUsageLimit.Text = selectedVoucher.MaxUsageLimit.ToString();
+                txtPerCustomerLimit.Text = selectedVoucher.PerCustomerLimit.ToString();
             }
+        }
+
+        private void ResetForm()
+        {
+            txtVoucherId.Text = "0";
+            txtCode.Text = string.Empty;
+            cbDiscountType.SelectedIndex = 0;
+            txtDiscount.Text = string.Empty;
+            txtMaxDiscountCap.Text = string.Empty;
+            txtMinOrder.Text = "0";
+            dpStartDate.SelectedDate = DateTime.Now.Date;
+            dpEndDate.SelectedDate = DateTime.Now.Date.AddDays(7);
+            txtMaxUsageLimit.Text = "100";
+            txtPerCustomerLimit.Text = "1";
+            dgVouchers.SelectedItem = null;
         }
 
         private void BtnClearForm_Click(object sender, RoutedEventArgs e)
         {
-            txtVoucherId.Text = "0"; // Reset về chế độ Thêm mới
-            txtCode.Text = "";
-            txtDiscount.Text = "";
-            txtMinOrder.Text = "";
-            dgVouchers.SelectedItem = null;
+            ResetForm();
         }
 
         private void BtnSave_Click(object sender, RoutedEventArgs e)
         {
-            try
+            if (!int.TryParse(txtVoucherId.Text, out int id)) id = 0;
+
+            string code = txtCode.Text.Trim();
+            string discountType = GetSelectedDiscountType();
+
+            if (!decimal.TryParse(txtDiscount.Text.Trim(), out decimal discount))
             {
-                int id = int.Parse(txtVoucherId.Text);
-                string code = txtCode.Text.Trim();
-                decimal discount = decimal.Parse(txtDiscount.Text);
-                decimal minOrder = string.IsNullOrEmpty(txtMinOrder.Text) ? 0 : decimal.Parse(txtMinOrder.Text);
-                DateTime validUntil = dpValidUntil.SelectedDate ?? DateTime.Now;
+                MessageBox.Show("Mức giảm giá phải là số hợp lệ!", "Lỗi nhập liệu", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
 
-                string result = _controller.SaveVoucher(id, code, discount, minOrder, validUntil);
-
-                if (result == null)
+            decimal? maxCap = null;
+            if (discountType == "PERCENTAGE" && !string.IsNullOrWhiteSpace(txtMaxDiscountCap.Text))
+            {
+                if (!decimal.TryParse(txtMaxDiscountCap.Text.Trim(), out decimal capVal))
                 {
-                    MessageBox.Show(id == 0 ? "Thêm mới thành công!" : "Cập nhật thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
-                    BtnClearForm_Click(null, null);
-                    LoadData();
+                    MessageBox.Show("Giảm tối đa phải là số hợp lệ!", "Lỗi nhập liệu", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
                 }
-                else
+                maxCap = capVal;
+            }
+
+            decimal minOrder = 0;
+            if (!string.IsNullOrWhiteSpace(txtMinOrder.Text))
+            {
+                if (!decimal.TryParse(txtMinOrder.Text.Trim(), out minOrder))
                 {
-                    MessageBox.Show(result, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Đơn tối thiểu phải là số hợp lệ!", "Lỗi nhập liệu", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
                 }
             }
-            catch (Exception)
+
+            if (dpStartDate.SelectedDate == null || dpEndDate.SelectedDate == null)
             {
-                MessageBox.Show("Vui lòng nhập đúng định dạng số tiền!", "Lỗi nhập liệu", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Vui lòng chọn ngày bắt đầu và ngày kết thúc!", "Lỗi nhập liệu", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (!int.TryParse(txtMaxUsageLimit.Text.Trim(), out int maxUsage)
+                || !int.TryParse(txtPerCustomerLimit.Text.Trim(), out int perCustomer))
+            {
+                MessageBox.Show("Giới hạn lượt dùng phải là số nguyên hợp lệ!", "Lỗi nhập liệu", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            string? result = _controller.SaveVoucher(
+                id,
+                code,
+                discountType,
+                discount,
+                maxCap,
+                minOrder,
+                dpStartDate.SelectedDate.Value,
+                dpEndDate.SelectedDate.Value,
+                maxUsage,
+                perCustomer);
+
+            if (result == null)
+            {
+                MessageBox.Show(id == 0 ? "Thêm mới thành công!" : "Cập nhật thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                ResetForm();
+                LoadData();
+            }
+            else
+            {
+                MessageBox.Show(result, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 
@@ -97,12 +177,16 @@ namespace BookStore.View.Manager
         {
             if (sender is Button btn && btn.CommandParameter is int voucherId)
             {
-                _controller.ToggleVoucherStatus(voucherId);
+                string? err = _controller.ToggleVoucherStatus(voucherId);
+                if (err != null)
+                {
+                    MessageBox.Show(err, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
                 LoadData();
             }
         }
 
-        // TÍNH NĂNG XUẤT CSV 
         private void BtnExportCSV_Click(object sender, RoutedEventArgs e)
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog
@@ -116,21 +200,7 @@ namespace BookStore.View.Manager
             {
                 try
                 {
-                    var list = _controller.GetVouchers();
-                    var csv = new StringBuilder();
-
-                    // Header của file CSV
-                    csv.AppendLine("ID,Mã Code,Giảm giá,Đơn tối thiểu,Trạng thái");
-
-                    // Chèn dữ liệu
-                    foreach (var v in list)
-                    {
-                        csv.AppendLine($"{v.VoucherId},{v.Code},{v.DiscountValue:0},{v.MinOrderValue:0},{v.Status}");
-                    }
-
-                    // Ghi ra file (Dùng UTF8 để hỗ trợ tiếng Việt trong Excel)
-                    File.WriteAllText(saveFileDialog.FileName, csv.ToString(), Encoding.UTF8);
-
+                    _controller.ExportVouchersToCsv(saveFileDialog.FileName, txtSearch.Text.Trim());
                     MessageBox.Show("Xuất file CSV thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 catch (Exception ex)
