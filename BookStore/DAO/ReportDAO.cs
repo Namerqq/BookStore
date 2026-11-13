@@ -106,6 +106,19 @@ namespace BookStore.DAO
             using var context = new DbSe2038BookymartFContext();
             var products = context.TbProducts.AsNoTracking().Include(p => p.Category).ToList();
 
+            string csvContent = BuildProductsCsv(products);
+            using (var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None))
+            using (var writer = new StreamWriter(stream, new UTF8Encoding(true)))
+            {
+                writer.Write(csvContent);
+            }
+
+            OrderLog.Add(context, $"Xuất CSV danh sách sản phẩm ra tệp: {filePath}");
+            context.SaveChanges();
+        }
+
+        public static string BuildProductsCsv(IEnumerable<TbProduct> products)
+        {
             var sb = new StringBuilder();
             sb.AppendLine("ID,SKU,TenSanPham,DanhMuc,Loai,GiaBan,GiaVon,TonKho,CanNangGram,TrangThai");
 
@@ -117,10 +130,7 @@ namespace BookStore.DAO
                 sb.AppendLine($"{p.ProductId},{skuEscaped},{nameEscaped},{categoryName},{p.ProductType},{p.Price:0},{p.UnitCost:0},{p.StockQuantity},{p.WeightGrams ?? 0},{p.Status}");
             }
 
-            File.WriteAllText(filePath, sb.ToString(), new UTF8Encoding(true));
-
-            OrderLog.Add(context, $"Xuất CSV danh sách sản phẩm ra tệp: {filePath}");
-            context.SaveChanges();
+            return sb.ToString();
         }
 
         private static string EscapeCsv(string value)
