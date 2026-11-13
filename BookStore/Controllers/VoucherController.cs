@@ -149,18 +149,13 @@ namespace BookStore.Controllers
         public void ExportVouchersToCsv(string filePath, string keyword = "")
         {
             var list = GetVouchers(keyword);
-            var csv = new StringBuilder();
-            csv.AppendLine("ID,MaCode,LoaiGiam,MucGiam,GiamToiDa,DonToiThieu,NgayBatDau,NgayKetThuc,TongLuotDung,LuotMoiKhach,TrangThai");
+            string csvContent = BuildVouchersCsv(list);
 
-            foreach (var v in list)
+            using (var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None))
+            using (var writer = new StreamWriter(stream, new UTF8Encoding(true)))
             {
-                string maxCap = v.MaxDiscountCap.HasValue ? v.MaxDiscountCap.Value.ToString("0") : "";
-                csv.AppendLine(
-                    $"{v.VoucherId},\"{v.Code.Replace("\"", "\"\"")}\",{v.DiscountType},{v.DiscountValue:0},{maxCap},{v.MinOrderValue:0}," +
-                    $"{v.StartDate:yyyy-MM-dd},{v.EndDate:yyyy-MM-dd},{v.MaxUsageLimit},{v.PerCustomerLimit},{v.Status}");
+                writer.Write(csvContent);
             }
-
-            File.WriteAllText(filePath, csv.ToString(), new UTF8Encoding(true));
 
             using var context = new DbSe2038BookymartFContext();
             context.TbActivityLogs.Add(new TbActivityLog
@@ -170,6 +165,22 @@ namespace BookStore.Controllers
                 CreatedAt = DateTime.Now
             });
             context.SaveChanges();
+        }
+
+        public static string BuildVouchersCsv(IEnumerable<TbVoucher> vouchers)
+        {
+            var csv = new StringBuilder();
+            csv.AppendLine("ID,MaCode,LoaiGiam,MucGiam,GiamToiDa,DonToiThieu,NgayBatDau,NgayKetThuc,TongLuotDung,LuotMoiKhach,TrangThai");
+
+            foreach (var v in vouchers)
+            {
+                string maxCap = v.MaxDiscountCap.HasValue ? v.MaxDiscountCap.Value.ToString("0") : "";
+                csv.AppendLine(
+                    $"{v.VoucherId},\"{v.Code.Replace("\"", "\"\"")}\",{v.DiscountType},{v.DiscountValue:0},{maxCap},{v.MinOrderValue:0}," +
+                    $"{v.StartDate:yyyy-MM-dd},{v.EndDate:yyyy-MM-dd},{v.MaxUsageLimit},{v.PerCustomerLimit},{v.Status}");
+            }
+
+            return csv.ToString();
         }
     }
 }
